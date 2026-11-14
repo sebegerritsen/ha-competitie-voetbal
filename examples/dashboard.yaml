@@ -1,4 +1,4 @@
-# Example dashboard for KNVB Voetbal (the one in the screenshots).
+# Example dashboard for Competitie Voetbal (the one in the screenshots).
 #
 # Needs the "HTML Jinja2 Template card" from HACS (custom:html-template-card).
 # 1. Replace `vv_voorbeeld_jo13_2` with your team's entity id part (the part between
@@ -243,7 +243,7 @@ views:
         {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
         {% set t = states['sensor.vv_voorbeeld_matches_today'] %}
         {% if t is none or t.state in ['unknown', 'unavailable'] %}
-        <div style="padding:16px;color:var(--secondary-text-color)">Volg je club om dit te vullen: <b>Instellingen → Apparaten &amp; diensten → KNVB Voetbal → Club toevoegen</b>. Dan zie je hier alle wedstrijden van vandaag, de thuiswedstrijden (handig voor de kantine) en de laatste uitslagen.</div>
+        <div style="padding:16px;color:var(--secondary-text-color)">Volg je club om dit te vullen: <b>Instellingen → Apparaten &amp; diensten → Competitie Voetbal → Club toevoegen</b>. Dan zie je hier alle wedstrijden van vandaag, de thuiswedstrijden (handig voor de kantine) en de laatste uitslagen.</div>
         {% else %}
         {% set thuis = states['sensor.vv_voorbeeld_home_matches_today'] %}{% set u = states['sensor.vv_voorbeeld_latest_results'] %}
         <div style="padding:12px 16px;display:flex;text-align:center">

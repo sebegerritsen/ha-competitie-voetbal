@@ -45,7 +45,6 @@ class KnvbClubEntity(CoordinatorEntity[KnvbClubCoordinator]):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"club_{club_id}")},
             name=subentry.title,
-            manufacturer="KNVB",
             model="Club",
             entry_type=DeviceEntryType.SERVICE,
         )

@@ -827,7 +827,7 @@
       "message": "The voetbal.nl app has changed and this version of the integration no longer fits ({error}). Update the integration."
     },
     "unknown_device": {
-      "message": "That device is not a team or club of KNVB Voetbal."
+      "message": "That device is not a team or club of Competitie Voetbal."
     },
     "not_a_team": {
       "message": "A standing exists only for a team, not for a club."
@@ -835,8 +835,8 @@
   },
   "issues": {
     "api_changed": {
-      "title": "KNVB Voetbal needs an update",
-      "description": "The voetbal.nl app's data service no longer accepts the requests of this version of the integration (the app was updated). Update KNVB Voetbal in HACS; if there is no newer version yet, please report it in the issues."
+      "title": "Competitie Voetbal needs an update",
+      "description": "The voetbal.nl app's data service no longer accepts the requests of this version of the integration (the app was updated). Update Competitie Voetbal in HACS; if there is no newer version yet, please report it in the issues."
     }
   },
   "services": {

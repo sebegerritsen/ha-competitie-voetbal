@@ -13,7 +13,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.knvb_voetbal.const import (
+from custom_components.competitie_voetbal.const import (
     CONF_MEET_MINUTES_AWAY,
     CONF_MEET_MINUTES_HOME,
     CONF_WEATHER_ENTITY,
@@ -269,7 +269,7 @@ def test_daily_forecast_matches_the_date() -> None:
     from datetime import datetime  # noqa: PLC0415
     from zoneinfo import ZoneInfo  # noqa: PLC0415
 
-    from custom_components.knvb_voetbal.coordinator import _forecast_item  # noqa: PLC0415
+    from custom_components.competitie_voetbal.coordinator import _forecast_item  # noqa: PLC0415
 
     items = [
         {"datetime": "2026-11-14T00:00:00+01:00", "temperature": 9.0},

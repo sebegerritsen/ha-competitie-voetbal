@@ -4,7 +4,7 @@ get_matches:
       required: true
       selector:
         device:
-          integration: knvb_voetbal
+          integration: competitie_voetbal
     upcoming_only:
       default: false
       selector:
@@ -15,4 +15,4 @@ get_standing:
       required: true
       selector:
         device:
-          integration: knvb_voetbal
+          integration: competitie_voetbal

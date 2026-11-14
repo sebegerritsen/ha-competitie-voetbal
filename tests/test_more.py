@@ -15,15 +15,15 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.knvb_voetbal.const import (
+from custom_components.competitie_voetbal.const import (
     CONF_CLUB_ID,
     CONF_CLUB_NAME,
     CONF_REFRESH_TOKEN,
     DOMAIN,
     SUBENTRY_CLUB,
 )
-from custom_components.knvb_voetbal.coordinator import estimated_duration
-from custom_components.knvb_voetbal.models import TeamRef
+from custom_components.competitie_voetbal.coordinator import estimated_duration
+from custom_components.competitie_voetbal.models import TeamRef
 
 from .conftest import CLUB_ID, EMAIL, NOW, TEAM_ID, data_url, load_fixture
 
@@ -296,7 +296,7 @@ async def test_season_history_into_statistics(
     freezer.move_to(NOW)
     hass.config.components.add("recorder")
     with patch(
-        "custom_components.knvb_voetbal.sensor.async_import_statistics"
+        "custom_components.competitie_voetbal.sensor.async_import_statistics"
     ) as import_statistics:
         await _setup(hass, config_entry)
     imported = {
@@ -328,7 +328,7 @@ def test_history_rows_step_between_matches() -> None:
 
     from homeassistant.util import dt as dt_util  # noqa: PLC0415
 
-    from custom_components.knvb_voetbal.sensor import history_rows  # noqa: PLC0415
+    from custom_components.competitie_voetbal.sensor import history_rows  # noqa: PLC0415
 
     utc = dt_util.UTC
     history = [

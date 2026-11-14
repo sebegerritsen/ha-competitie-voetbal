@@ -1,7 +1,7 @@
 [project]
-name = "ha-knvb-voetbal"
+name = "ha-competitie-voetbal"
 version = "0.1.0"
-description = "Home Assistant integration for Dutch amateur football (KNVB): fixtures, results and standings"
+description = "Home Assistant integration for Dutch amateur football: fixtures, results and standings (data from the voetbal.nl app)"
 license = "MIT"
 requires-python = ">=3.13"
 
@@ -24,6 +24,6 @@ ignore = ["PLR0913", "PLR2004", "S101", "RUF001", "RUF002"]
 "tools/*" = ["S"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["custom_components.knvb_voetbal"]
+known-first-party = ["custom_components.competitie_voetbal"]
 force-sort-within-sections = true
 combine-as-imports = true

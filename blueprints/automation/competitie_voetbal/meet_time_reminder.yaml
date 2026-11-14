@@ -1,12 +1,12 @@
 blueprint:
-  name: KNVB Voetbal – reminder before meet time
+  name: Competitie Voetbal – reminder before meet time
   description: >-
     Reminds you a set time before the team meets for a match (the integration's
     *Meet time* sensor: the club's departure time, or kick-off minus what you set),
     with the venue, pitch, dressing room and the weather forecast (if set up).
     Add travel time to the lead time: the meet time is when you need to be there.
   domain: automation
-  source_url: https://github.com/sebegerritsen/ha-knvb-voetbal/blob/main/blueprints/automation/knvb_voetbal/meet_time_reminder.yaml
+  source_url: https://github.com/sebegerritsen/ha-competitie-voetbal/blob/main/blueprints/automation/competitie_voetbal/meet_time_reminder.yaml
   input:
     meet_time_entity:
       name: Meet time sensor
@@ -14,7 +14,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - integration: knvb_voetbal
+            - integration: competitie_voetbal
               domain: sensor
               device_class: timestamp
     notify_device:

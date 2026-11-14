@@ -1,4 +1,4 @@
-# KNVB Voetbal for Home Assistant
+# Competitie Voetbal for Home Assistant
 
 A [Home Assistant](https://www.home-assistant.io/) integration, installable through [HACS](https://hacs.xyz/),
 for Dutch amateur football: the fixtures, results and standings of any team of any KNVB club.
@@ -69,9 +69,9 @@ play there, or for whoever runs the canteen on Saturdays. The club gets a device
 
 ### Actions
 
-- `knvb_voetbal.get_matches`: the matches of a team (with venue, meet time and score) or a club, as a
+- `competitie_voetbal.get_matches`: the matches of a team (with venue, meet time and score) or a club, as a
   response, optionally upcoming ones only. For scripts, dashboards and voice assistants.
-- `knvb_voetbal.get_standing`: the full standing of a team's pool, with each team's form, and the
+- `competitie_voetbal.get_standing`: the full standing of a team's pool, with each team's form, and the
   period standings.
 
 If the voetbal.nl app changes its data service so that this version no longer fits, Home Assistant
@@ -87,7 +87,7 @@ Home Assistant's statistics with the season so far.
 
 ### Team settings
 
-*Settings → Devices & services → KNVB Voetbal → (team) → ⋮ → Reconfigure*: when the team meets for home
+*Settings → Devices & services → Competitie Voetbal → (team) → ⋮ → Reconfigure*: when the team meets for home
 and away matches when the club has not entered a departure time (default 30 minutes before kick-off),
 and optionally a weather entity for the *Weather at next match* sensor.
 
@@ -97,16 +97,16 @@ Ready-made automations that send a notification to your phone (Home Assistant ap
 
 | Blueprint | What it does | |
 |---|---|---|
-| Notify on match changes | a match is called off, back on, moved, or has a result | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-knvb-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fknvb_voetbal%2Fmatch_update_notify.yaml) |
-| Reminder before meet time | a set time before the meet time, with venue, address, dressing room and weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-knvb-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fknvb_voetbal%2Fmeet_time_reminder.yaml) |
-| Match day summary | at a set time on match days: opponent, kick-off, meet time, venue, dressing room, weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-knvb-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fknvb_voetbal%2Fmatch_day_summary.yaml) |
+| Notify on match changes | a match is called off, back on, moved, or has a result | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmatch_update_notify.yaml) |
+| Reminder before meet time | a set time before the meet time, with venue, address, dressing room and weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmeet_time_reminder.yaml) |
+| Match day summary | at a set time on match days: opponent, kick-off, meet time, venue, dressing room, weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmatch_day_summary.yaml) |
 
 ## Installation
 
-1. In HACS, add this repository as a custom repository (category *Integration*), install **KNVB
-   Voetbal** and restart Home Assistant. Or copy `custom_components/knvb_voetbal` into your
+1. In HACS, add this repository as a custom repository (category *Integration*), install **Competitie
+   Voetbal** and restart Home Assistant. Or copy `custom_components/competitie_voetbal` into your
    configuration's `custom_components` folder and restart.
-2. **Settings → Devices & services → Add integration → KNVB Voetbal**, and log in with your voetbal.nl
+2. **Settings → Devices & services → Add integration → Competitie Voetbal**, and log in with your voetbal.nl
    account. If the account follows teams in the app, you can pick those right away.
 3. Add more teams with **Add team** on the integration's page: from the teams you follow, or by
    searching for a club and picking one of its teams.

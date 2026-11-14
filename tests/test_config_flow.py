@@ -12,8 +12,8 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.knvb_voetbal.api import TOKEN_URL
-from custom_components.knvb_voetbal.const import (
+from custom_components.competitie_voetbal.api import TOKEN_URL
+from custom_components.competitie_voetbal.const import (
     CONF_CLUB_ID,
     CONF_REFRESH_TOKEN,
     CONF_TEAM_ID,

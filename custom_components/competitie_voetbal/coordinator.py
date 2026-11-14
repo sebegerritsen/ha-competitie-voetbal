@@ -87,7 +87,7 @@ def api_changed(hass: HomeAssistant, changed: bool) -> None:
             is_fixable=False,
             severity=ir.IssueSeverity.ERROR,
             translation_key=ISSUE_API_CHANGED,
-            learn_more_url="https://github.com/sebegerritsen/ha-knvb-voetbal/issues",
+            learn_more_url="https://github.com/sebegerritsen/ha-competitie-voetbal/issues",
         )
     else:
         ir.async_delete_issue(hass, DOMAIN, ISSUE_API_CHANGED)

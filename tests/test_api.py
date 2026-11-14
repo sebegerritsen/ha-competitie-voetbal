@@ -11,7 +11,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import pytest
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.knvb_voetbal.api import (
+from custom_components.competitie_voetbal.api import (
     APP_VERSION,
     TOKEN_URL,
     KnvbAuthError,
