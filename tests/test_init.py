@@ -130,7 +130,7 @@ async def test_calendar(
     ]
     today = events[2]
     assert today["description"] == (
-        "3e klasse (2e fase) – 24\nVeld: veld 2\nKleedkamer: 3\nVertrek: 09:15"
+        "3e klasse (2e fase) – 24\nVeld: veld 2\nKleedkamer: 3\nVertrek: 09:15\nWedstrijdnummer: 1"
     )
     assert today["end"] == "2026-11-14T11:15:00+01:00"
     away = events[3]

@@ -1,7 +1,136 @@
 {
  "ResultsFiltered": false,
  "Topscorers": [],
- "PeriodStanding": [],
+ "PeriodStanding": [
+  {
+   "PeriodNumber": 1,
+   "PoolStanding": {
+    "ExtraHeaderPosition": null,
+    "PoolStandingTeam": [
+     {
+      "Position": 2,
+      "PublicTeamId": "T1000000001",
+      "TeamCode": "JO13-2",
+      "TeamName": "VV Voorbeeld JO13-2",
+      "SportId": "SOCCER-VE-AL",
+      "SportTag": "SATURDAY",
+      "SportDescription": "Veld Algemeen/Zaterdag",
+      "Gender": "Male",
+      "LocalTeam": false,
+      "LogoUrl": null,
+      "TotalPoints": 3,
+      "TotalMatches": 1,
+      "Won": 1,
+      "Draw": 0,
+      "Lost": 0,
+      "GoalsFor": 3,
+      "GoalsAgainst": 1,
+      "GoalsDifference": 2,
+      "PenaltyPoints": 0,
+      "Club": {
+       "ClubId": "BBXX01A",
+       "ClubName": "VV Voorbeeld",
+       "City": "VOORDORP",
+       "ClubLogo": {
+        "Bucket": "b",
+        "Hash": "00000000000000000000000000000000"
+       }
+      }
+     },
+     {
+      "Position": 1,
+      "PublicTeamId": "T2000000001",
+      "TeamCode": "JO13-1",
+      "TeamName": "SV Fictief JO13-1",
+      "SportId": "SOCCER-VE-AL",
+      "SportTag": "SATURDAY",
+      "SportDescription": "Veld Algemeen/Zaterdag",
+      "Gender": "Male",
+      "LocalTeam": false,
+      "LogoUrl": null,
+      "TotalPoints": 3,
+      "TotalMatches": 1,
+      "Won": 1,
+      "Draw": 0,
+      "Lost": 0,
+      "GoalsFor": 4,
+      "GoalsAgainst": 0,
+      "GoalsDifference": 4,
+      "PenaltyPoints": 0,
+      "Club": {
+       "ClubId": "BBXX02B",
+       "ClubName": "SV Fictief",
+       "City": "NERGENSHUIZEN",
+       "ClubLogo": {
+        "Bucket": "b",
+        "Hash": "00000000000000000000000000000000"
+       }
+      }
+     },
+     {
+      "Position": 3,
+      "PublicTeamId": "T4000000001",
+      "TeamCode": "JO13-1",
+      "TeamName": "VV Verzonnen JO13-1",
+      "SportId": "SOCCER-VE-AL",
+      "SportTag": "SATURDAY",
+      "SportDescription": "Veld Algemeen/Zaterdag",
+      "Gender": "Male",
+      "LocalTeam": false,
+      "LogoUrl": null,
+      "TotalPoints": 1,
+      "TotalMatches": 1,
+      "Won": 0,
+      "Draw": 1,
+      "Lost": 0,
+      "GoalsFor": 2,
+      "GoalsAgainst": 2,
+      "GoalsDifference": 0,
+      "PenaltyPoints": 0,
+      "Club": {
+       "ClubId": "BBXX04D",
+       "ClubName": "VV Verzonnen",
+       "City": "DORP AAN ZEE",
+       "ClubLogo": {
+        "Bucket": "b",
+        "Hash": "00000000000000000000000000000000"
+       }
+      }
+     },
+     {
+      "Position": 4,
+      "PublicTeamId": "T3000000001",
+      "TeamCode": "JO13-3",
+      "TeamName": "RKVV Denkbeeld JO13-3",
+      "SportId": "SOCCER-VE-AL",
+      "SportTag": "SATURDAY",
+      "SportDescription": "Veld Algemeen/Zaterdag",
+      "Gender": "Male",
+      "LocalTeam": false,
+      "LogoUrl": null,
+      "TotalPoints": 0,
+      "TotalMatches": 1,
+      "Won": 0,
+      "Draw": 0,
+      "Lost": 1,
+      "GoalsFor": 1,
+      "GoalsAgainst": 3,
+      "GoalsDifference": -2,
+      "PenaltyPoints": 0,
+      "Club": {
+       "ClubId": "BBXX03C",
+       "ClubName": "RKVV Denkbeeld",
+       "City": "ERGENS",
+       "ClubLogo": {
+        "Bucket": "b",
+        "Hash": "00000000000000000000000000000000"
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
  "MatchResult": [
   {
    "PublicMatchId": "M090",

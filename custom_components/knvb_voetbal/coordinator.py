@@ -4,18 +4,24 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 from datetime import date, datetime, time, timedelta
+import re
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import KnvbAuthError, KnvbClient, KnvbConnectionError, KnvbError
+from .api import KnvbApiChangedError, KnvbAuthError, KnvbClient, KnvbConnectionError, KnvbError
 from .changes import MatchChange, MatchState, detect_changes, updated_states
 from .const import (
+    CLUB_UPDATE_INTERVAL,
+    CLUB_UPDATE_INTERVAL_MATCH_DAY,
+    CLUB_UPDATE_INTERVAL_RESULTS,
+    CONF_CLUB_ID,
     CONF_MEET_MINUTES_AWAY,
     CONF_MEET_MINUTES_HOME,
     CONF_TEAM_ID,
@@ -40,7 +46,7 @@ from .const import (
     WEATHER_AHEAD,
     WEATHER_REFRESH,
 )
-from .models import NL_TZ, Facility, Match, MatchStatus, Pool, PoolData, StandingRow
+from .models import NL_TZ, Facility, Match, MatchStatus, Pool, PoolData, StandingRow, TeamRef
 
 NOT_PLAYED = frozenset({MatchStatus.CANCELLED})
 DONE = frozenset({MatchStatus.FINAL, MatchStatus.CANCELLED, MatchStatus.ABANDONED})
@@ -52,6 +58,7 @@ class KnvbRuntimeData:
 
     client: KnvbClient
     coordinators: dict[str, KnvbTeamCoordinator] = field(default_factory=dict)
+    clubs: dict[str, KnvbClubCoordinator] = field(default_factory=dict)
 
 
 type KnvbConfigEntry = ConfigEntry[KnvbRuntimeData]
@@ -65,6 +72,25 @@ def match_duration(net: int | None, gross: int | None) -> timedelta:
     if gross:
         duration = min(duration, timedelta(minutes=gross))
     return duration
+
+
+ISSUE_API_CHANGED = "api_changed"
+
+
+def api_changed(hass: HomeAssistant, changed: bool) -> None:
+    """Show (or clear) a repair: the voetbal.nl app's API moved on, update the integration."""
+    if changed:
+        ir.async_create_issue(
+            hass,
+            DOMAIN,
+            ISSUE_API_CHANGED,
+            is_fixable=False,
+            severity=ir.IssueSeverity.ERROR,
+            translation_key=ISSUE_API_CHANGED,
+            learn_more_url="https://github.com/sebegerritsen/ha-knvb-voetbal/issues",
+        )
+    else:
+        ir.async_delete_issue(hass, DOMAIN, ISSUE_API_CHANGED)
 
 
 def match_result(match: Match, team_id: str) -> str | None:
@@ -126,6 +152,21 @@ class SeasonRecord:
     goals_against: int
 
 
+# Net playing time by age group, as the KNVB data has it (O8 40, O10 50, O11-O13 60, ...).
+_AGE_MINUTES = ((8, 40), (10, 50), (13, 60), (15, 70), (17, 80))
+_AGE = re.compile(r"^[JM]?O(\d+)", re.IGNORECASE)
+
+
+def estimated_duration(team: TeamRef) -> timedelta:
+    """Return a match's expected length from the age group in a team's code (`JO13-2`)."""
+    if team.code and (found := _AGE.match(team.code)):
+        age = int(found.group(1))
+        for max_age, minutes in _AGE_MINUTES:
+            if age <= max_age:
+                return match_duration(minutes, None)
+    return DEFAULT_MATCH_DURATION
+
+
 @dataclass(slots=True)
 class TeamData:
     """Everything known about one team."""
@@ -138,6 +179,8 @@ class TeamData:
     durations: dict[int, timedelta] = field(default_factory=dict)
     # Every result of the current pool, for the form of the other teams.
     pool_results: list[Match] = field(default_factory=list)
+    # Period standings of the current pool (senior pools): period number -> standing.
+    periods: dict[int, list[StandingRow]] = field(default_factory=dict)
     meet_minutes_home: int = DEFAULT_MEET_MINUTES
     meet_minutes_away: int = DEFAULT_MEET_MINUTES
     # Forecast for the next match (`weather_match_id`), if a weather entity is set.
@@ -232,30 +275,89 @@ class TeamData:
     def meet_time(self, match: Match | None) -> tuple[datetime | None, str | None]:
         """Return when the team meets for a match, and where that time comes from.
 
-        The club's departure time (vertrektijd) when it entered one, else kick-off
-        minus the minutes set for home or away matches.
+        The club's meet time (verzameltijd) or departure time (vertrektijd) when it
+        entered one, else kick-off minus the minutes set for home or away matches.
         """
         if match is None or match.start is None:
             return None, None
         facility = self.facilities.get(match.id)
-        if facility is not None and facility.departure_time:
-            try:
-                clock = time.fromisoformat(facility.departure_time)
-            except ValueError:
-                clock = None
-            if clock is not None:
-                day = match.start.astimezone(NL_TZ).date()
-                meet = datetime.combine(day, clock, NL_TZ)
-                if match.start - MAX_MEET_LEAD <= meet <= match.start:
+        if facility is not None:
+            for clock_text in (facility.assembly_time, facility.departure_time):
+                if meet := _club_time(match.start, clock_text):
                     return meet, "club"
         minutes = self.meet_minutes_home if match.is_home(self.team_id) else self.meet_minutes_away
         return match.start - timedelta(minutes=minutes), "settings"
+
+    def last_round(self) -> list[Match]:
+        """Return the results of the pool's most recent match day."""
+        played = [match for match in self.pool_results if match.has_result and match.start]
+        if not played:
+            return []
+        last_day = max(dt_util.as_local(m.start).date() for m in played if m.start)
+        return [m for m in played if m.start and dt_util.as_local(m.start).date() == last_day]
+
+    def pool_history(self) -> list[tuple[datetime, dict[str, int]]]:
+        """Return the team's running numbers in the current pool after each of its results.
+
+        Used to fill the long-term statistics, so graphs cover the season from the start.
+        Empty when the result list does not add up to the current standing (for example
+        after a points deduction), rather than drawing a wrong line.
+        """
+        row = self.standing
+        if row is None or self.pool is None:
+            return []
+        played = [
+            match
+            for match in self.pool_results
+            if match.involves(self.team_id) and match.has_result and match.start
+        ]
+        history: list[tuple[datetime, dict[str, int]]] = []
+        totals = {"points": 0, "goals_for": 0, "goals_against": 0, "played": 0}
+        for match in played:
+            goals = match.goals(self.team_id)
+            assert goals is not None and match.start is not None
+            totals["played"] += 1
+            totals["goals_for"] += goals[0]
+            totals["goals_against"] += goals[1]
+            totals["points"] += {"win": 3, "draw": 1}.get(
+                match_result(match, self.team_id) or "", 0
+            )
+            numbers = dict(totals)
+            numbers["goal_difference"] = totals["goals_for"] - totals["goals_against"]
+            history.append((match.start + self.duration(match), numbers))
+        if not history:
+            return []
+        final = history[-1][1]
+        if (final["points"], final["played"], final["goal_difference"]) != (
+            row.points,
+            row.played,
+            row.goal_difference,
+        ):
+            return []
+        return history
+
+    def period_positions(self) -> list[dict[str, Any]]:
+        """Return the team's position and points in each period, and the period leader."""
+        periods = []
+        for number, rows in sorted(self.periods.items()):
+            own = next((row for row in rows if row.team.id == self.team_id), None)
+            leader = rows[0] if rows else None
+            periods.append(
+                {
+                    "period": number,
+                    "position": own.position if own else None,
+                    "points": own.points if own else None,
+                    "played": own.played if own else None,
+                    "leader": leader.team.name if leader else None,
+                }
+            )
+        return periods
 
     def duration(self, match: Match) -> timedelta:
         """Return how long a match is expected to take."""
         if match.pool is not None and match.pool.id in self.durations:
             return self.durations[match.pool.id]
-        return DEFAULT_MATCH_DURATION
+        return estimated_duration(match.home if match.is_home(self.team_id) else match.away)
 
     def match_end(self, match: Match) -> datetime | None:
         """Return when a match is expected to end."""
@@ -273,6 +375,18 @@ class TeamData:
     def last_result(self) -> Match | None:
         """Return the most recent match with a result."""
         return next((match for match in reversed(self.matches) if match.has_result), None)
+
+
+def _club_time(start: datetime, clock_text: str | None) -> datetime | None:
+    """Return a club-entered time of day on the match day, if it is a sane meet time."""
+    if not clock_text:
+        return None
+    try:
+        clock = time.fromisoformat(clock_text)
+    except ValueError:
+        return None
+    meet = datetime.combine(start.astimezone(NL_TZ).date(), clock, NL_TZ)
+    return meet if start - MAX_MEET_LEAD <= meet <= start else None
 
 
 def _sort_key(match: Match) -> tuple[bool, datetime]:
@@ -330,6 +444,13 @@ class KnvbTeamCoordinator(DataUpdateCoordinator[TeamData]):
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN, translation_key="auth_failed"
             ) from err
+        except KnvbApiChangedError as err:
+            api_changed(self.hass, True)
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="api_changed",
+                translation_placeholders={"error": str(err)},
+            ) from err
         except KnvbConnectionError as err:
             raise UpdateFailed(
                 translation_domain=DOMAIN,
@@ -342,6 +463,7 @@ class KnvbTeamCoordinator(DataUpdateCoordinator[TeamData]):
                 translation_key="unexpected_response",
                 translation_placeholders={"error": str(err)},
             ) from err
+        api_changed(self.hass, False)
         self.update_interval = self._next_interval(data, dt_util.utcnow())
         return data
 
@@ -383,6 +505,7 @@ class KnvbTeamCoordinator(DataUpdateCoordinator[TeamData]):
             facilities={match_id: facility for match_id, (_, facility) in self._facilities.items()},
             durations={pid: d for pid, (_, d) in self._durations.items() if d is not None},
             pool_results=sorted(current_data.results, key=_sort_key) if current_data else [],
+            periods=current_data.periods if current_data else {},
             meet_minutes_home=int(settings.get(CONF_MEET_MINUTES_HOME, DEFAULT_MEET_MINUTES)),
             meet_minutes_away=int(settings.get(CONF_MEET_MINUTES_AWAY, DEFAULT_MEET_MINUTES)),
         )
@@ -549,3 +672,116 @@ def _forecast_item(
         if gap <= timedelta(minutes=90) and (best is None or gap < best[0]):
             best = (gap, item)
     return best[1] if best else None
+
+
+@dataclass(slots=True)
+class ClubData:
+    """Every match of a club: upcoming ones and the latest results."""
+
+    club_id: str
+    matches: list[Match]
+
+    def side(self, match: Match) -> TeamRef | None:
+        """Return the club's team in a match (the home team if both are the club's)."""
+        if match.home.club_id == self.club_id:
+            return match.home
+        if match.away.club_id == self.club_id:
+            return match.away
+        return None
+
+    def is_home(self, match: Match) -> bool:
+        """Return whether the club plays at home."""
+        return match.home.club_id == self.club_id
+
+    def result(self, match: Match) -> str | None:
+        """Return win, draw or loss for the club; None for a match between its own teams."""
+        if match.home.club_id == match.away.club_id or (team := self.side(match)) is None:
+            return None
+        return match_result(match, team.id)
+
+    def matches_on(self, day: date, *, home_only: bool = False) -> list[Match]:
+        """Return the club's matches (not called off) on a day, local time."""
+        return [
+            match
+            for match in self.matches
+            if match.start is not None
+            and match.status is not MatchStatus.CANCELLED
+            and dt_util.as_local(match.start).date() == day
+            and (self.is_home(match) or not home_only)
+        ]
+
+    def latest_results(self) -> tuple[date | None, list[Match]]:
+        """Return the club's most recent match day with results, and those results."""
+        played = [match for match in self.matches if match.has_result and match.start]
+        if not played:
+            return None, []
+        day = max(dt_util.as_local(m.start).date() for m in played if m.start)
+        return day, [m for m in played if m.start and dt_util.as_local(m.start).date() == day]
+
+
+class KnvbClubCoordinator(DataUpdateCoordinator[ClubData]):
+    """Fetches a club's programme and latest results (all its teams)."""
+
+    config_entry: KnvbConfigEntry
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entry: KnvbConfigEntry,
+        subentry: ConfigSubentry,
+        client: KnvbClient,
+    ) -> None:
+        """Initialize the coordinator."""
+        super().__init__(
+            hass,
+            LOGGER,
+            config_entry=entry,
+            name=f"{DOMAIN} {subentry.title}",
+            update_interval=CLUB_UPDATE_INTERVAL,
+        )
+        self.client = client
+        self.subentry = subentry
+        self.club_id: str = subentry.data[CONF_CLUB_ID]
+
+    async def _async_update_data(self) -> ClubData:
+        try:
+            program = await self.client.get_club_program(self.club_id)
+            results = await self.client.get_club_results(self.club_id)
+        except KnvbAuthError as err:
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN, translation_key="auth_failed"
+            ) from err
+        except KnvbApiChangedError as err:
+            api_changed(self.hass, True)
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="api_changed",
+                translation_placeholders={"error": str(err)},
+            ) from err
+        except KnvbError as err:
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="cannot_connect",
+                translation_placeholders={"error": str(err)},
+            ) from err
+        api_changed(self.hass, False)
+        matches = {match.id: match for match in program}
+        for match in results:
+            known = matches.get(match.id)
+            matches[match.id] = known.merge(match) if known else match
+        data = ClubData(club_id=self.club_id, matches=sorted(matches.values(), key=_sort_key))
+        self.update_interval = self._next_interval(data, dt_util.utcnow())
+        return data
+
+    @staticmethod
+    def _next_interval(data: ClubData, now: datetime) -> timedelta:
+        """Poll more often on the club's match days, most while results come in."""
+        today = data.matches_on(dt_util.as_local(now).date())
+        if not today:
+            return CLUB_UPDATE_INTERVAL
+        if any(
+            m.start and m.start - MATCH_LEAD <= now <= m.start + RESULT_WAIT and not m.has_result
+            for m in today
+        ):
+            return CLUB_UPDATE_INTERVAL_RESULTS
+        return CLUB_UPDATE_INTERVAL_MATCH_DAY

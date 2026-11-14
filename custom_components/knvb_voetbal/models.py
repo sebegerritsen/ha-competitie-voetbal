@@ -131,6 +131,8 @@ class TeamRef:
     club_name: str | None = None
     sport: str | None = None
     classes: tuple[str, ...] = ()
+    # The club's home kit: shirt, shorts, socks (as the club describes them).
+    colours: tuple[str | None, str | None, str | None] | None = None
 
     @property
     def logo(self) -> str | None:
@@ -146,6 +148,8 @@ class TeamRef:
             return None
         club = _dict(data.get("Club"))
         code = _str(data.get("TeamCode"))
+        outfit = _dict(_dict(club.get("ClubColors")).get("HomeOutfit"))
+        kit = (_str(outfit.get("Shirt")), _str(outfit.get("Shorts")), _str(outfit.get("Stocking")))
         return cls(
             id=team_id,
             name=_str(data.get("TeamName")) or team_id,
@@ -158,6 +162,7 @@ class TeamRef:
                 for item in _list(data.get("Class"))
                 if (name := _str(_dict(item).get("ClassName")))
             ),
+            colours=kit if any(kit) else None,
         )
 
 
@@ -235,6 +240,7 @@ class Match:
     status_note: str | None = None
     venue: str | None = None
     pool: Pool | None = None
+    number: int | None = None
     score_home: int | None = None
     score_away: int | None = None
     extra_time_home: int | None = None
@@ -261,6 +267,7 @@ class Match:
             away=away,
             venue=_str(data.get("Location")),
             pool=Pool.from_api(data.get("Pool")),
+            number=_int(data.get("ExternalMatchId")),
             score_home=_int(home_result.get("Score")),
             score_away=_int(away_result.get("Score")),
             extra_time_home=_int(home_result.get("ExtensionScore")),
@@ -306,6 +313,7 @@ class Match:
             venue=newer.venue or self.venue,
             pool=newer.pool or self.pool,
             start=newer.start or self.start,
+            number=newer.number or self.number,
         )
 
 
@@ -316,6 +324,20 @@ def parse_program(answer: Any) -> list[Match]:
         for item in _list(_dict(answer).get("ProgramItemMatch"))
         if (match := Match.from_api(_dict(item).get("Match"))) is not None
     ]
+
+
+def parse_club_program(answer: Any) -> list[Match]:
+    """Parse club/ClubProgram: the club's upcoming matches."""
+    return [
+        match
+        for item in _list(_dict(answer).get("ProgramItemMatchClub"))
+        if (match := Match.from_api(_dict(item).get("Match"))) is not None
+    ]
+
+
+def parse_club_results(answer: Any) -> list[Match]:
+    """Parse club/ClubMatchResults: the club's latest results."""
+    return _results(_dict(answer).get("MatchResult"))
 
 
 def _results(items: Any) -> list[Match]:
@@ -393,14 +415,28 @@ class PoolData:
 
     results: list[Match] = field(default_factory=list)
     standings: list[StandingRow] = field(default_factory=list)
+    # Period standings (periodestanden) of senior pools: period number -> standing.
+    periods: dict[int, list[StandingRow]] = field(default_factory=dict)
 
     @classmethod
     def from_api(cls, data: dict[str, Any]) -> PoolData:
         """Parse the answer."""
-        rows = _list(_dict(data.get("PoolStanding")).get("PoolStandingTeam"))
-        standings = [row for item in rows if (row := StandingRow.from_api(item)) is not None]
-        standings.sort(key=lambda row: (row.position is None, row.position or 0))
-        return cls(results=_results(data.get("MatchResult")), standings=standings)
+        periods: dict[int, list[StandingRow]] = {}
+        for item in _list(data.get("PeriodStanding")):
+            if (number := _int(_dict(item).get("PeriodNumber"))) is not None:
+                periods[number] = _standing(_dict(item).get("PoolStanding"))
+        return cls(
+            results=_results(data.get("MatchResult")),
+            standings=_standing(data.get("PoolStanding")),
+            periods=periods,
+        )
+
+
+def _standing(data: Any) -> list[StandingRow]:
+    rows = _list(_dict(data).get("PoolStandingTeam"))
+    standings = [row for item in rows if (row := StandingRow.from_api(item)) is not None]
+    standings.sort(key=lambda row: (row.position is None, row.position or 0))
+    return standings
 
 
 @dataclass(frozen=True, slots=True)
@@ -415,13 +451,11 @@ class Facility:
     home_dressing_room: str | None = None
     away_dressing_room: str | None = None
     departure_time: str | None = None
+    assembly_time: str | None = None
 
     @classmethod
     def from_api(cls, data: dict[str, Any]) -> Facility:
         """Parse the answer."""
-        departure = _str(data.get("DepartureTime"))
-        if departure and len(departure) == 8 and departure.endswith(":00"):
-            departure = departure[:5]
         return cls(
             name=_str(data.get("FacilityName")),
             address=_str(data.get("Address")),
@@ -430,7 +464,8 @@ class Facility:
             pitch=_str(data.get("SubFacilityName")),
             home_dressing_room=_str(data.get("HomeDressingRoom")),
             away_dressing_room=_str(data.get("AwayDressingRoom")),
-            departure_time=departure,
+            departure_time=_clock(data.get("DepartureTime")),
+            assembly_time=_clock(data.get("AssemblyTime")),
         )
 
     @property
@@ -441,6 +476,14 @@ class Facility:
             postal = f"{postal[:4]} {postal[4:]}"
         town = " ".join(part for part in (postal, self.city) if part)
         return ", ".join(part for part in (self.address, town) if part) or None
+
+
+def _clock(value: Any) -> str | None:
+    """Return a time of day as `HH:MM` (the API sends `09:20:00`)."""
+    text = _str(value)
+    if text and len(text) == 8 and text.endswith(":00"):
+        return text[:5]
+    return text
 
 
 def parse_playing_time(data: dict[str, Any]) -> tuple[int | None, int | None]:

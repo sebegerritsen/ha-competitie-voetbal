@@ -107,6 +107,8 @@ def mock_api(aioclient_mock: AiohttpClientMocker) -> AiohttpClientMocker:
         ("user/favorite/Favorites", 2, ()): "favorites.json",
         ("club/Clubs", 1, ()): "clubs.json",
         ("club/ClubTeams", 1, (("ClubId", CLUB_ID),)): "club_teams.json",
+        ("club/ClubProgram", 3, (("ClubId", CLUB_ID),)): "club_program.json",
+        ("club/ClubMatchResults", 2, (("ClubId", CLUB_ID),)): "club_results.json",
         ("team/TeamProgram", 3, tuple(team.items())): "team_program.json",
         ("team/TeamCompetitionData", 2, tuple(team.items())): "team_competition.json",
         ("pool/PoolCompetitionData", 2, (("PoolId", str(POOL_CURRENT)),)): "pool_current.json",

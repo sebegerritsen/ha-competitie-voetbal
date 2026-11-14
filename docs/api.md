@@ -68,12 +68,18 @@ status **603** ("Unknown entity version").
 | `team/TeamPoolAssignments?v=2&PublicTeamId=<id>` | Pool assignments over the season. |
 | `pool/PoolCompetitionData?v=2&PoolId=<id>` | The pool's results (`MatchResult[]`: `Status` `FINAL`, `StatusDescription`, `HomeResult`/`AwayResult` with `Score`, `ExtensionScore`, `PenaltyScore`) and standing (`PoolStanding.PoolStandingTeam[]`: `Position`, `TotalPoints`, `TotalMatches`, `Won`, `Draw`, `Lost`, `GoalsFor`, `GoalsAgainst`, `GoalsDifference`, `PenaltyPoints`). |
 | `team/TeamMatchEventStatistics?v=2&PublicTeamId=<id>` | Match event statistics (goals etc.). |
-| `match/MatchFacility?v=2&PublicMatchId=<id>` | Where a match is played: `FacilityName`, `Address`, `ZipCode`, `City`, `SubFacilityName` (pitch, `veld 2`), `HomeDressingRoom`, `AwayDressingRoom`, `DepartureTime` (`09:20:00`), `PhoneNumber` (the venue's). |
+| `match/MatchFacility?v=2&PublicMatchId=<id>` | Where a match is played: `FacilityName`, `Address`, `ZipCode`, `City`, `SubFacilityName` (pitch, `veld 2`), `HomeDressingRoom`, `AwayDressingRoom`, `DepartureTime` (`09:20:00`), `AssemblyTime` (meet time, often null), `PhoneNumber` (the venue's). |
 | `match/MatchInfo?v=1&PublicMatchId=<id>` | Match number and district, and the class rules in `ClassExtraAttributes`, incl. `NetPlayingTime` (minutes on the clock: 90 seniors, 80 O17, 60 O11–O13, 50 O10, 40 O8) and `GrossPlayingTime` (the booked slot: 135 seniors, 105 O13). Same for every match of a class. |
-| `club/ClubProgram?v=3&ClubId=<id>`, `club/ClubMatchResults?v=2&ClubId=<id>` | The club's programme (`ProgramItemMatchClub[]`, `TeamCode` is `-` there) and its latest 100 results. |
+| `club/ClubProgram?v=3&ClubId=<id>`, `club/ClubMatchResults?v=2&ClubId=<id>` | The club's programme (`ProgramItemMatchClub[]` → `Match`, `TeamCode` is `-` there) and its latest 100 results (`MatchResult[]`). On a Saturday morning a mid-sized club had 42 matches in its programme; results of that day appeared in `ClubMatchResults` within hours, while some teams' results took longer. |
 | `user/favorite/Favorites?v=2` | The account's followed teams/clubs (`FavoriteTeam[]` with `PublicTeamId`, `Club.ClubId`): handy for a config flow ("pick from your favourites"). |
 | `user/User?v=2`, `user/UserPersonalData?v=4` | The account itself (personal data: don't log). |
 | `team/TeamPersons?PublicTeamId=<id>` | The team roster: **names of players, often minors. An integration should not fetch or store this.** |
+
+Pool answers also carry `PeriodStanding[]` for senior pools: `{PeriodNumber, PoolStanding: {PoolStandingTeam[]}}`
+per period (same rows as the standing), and `Topscorers` (names of players: not used). Teams and clubs carry
+`Club.ClubColors.HomeOutfit/AwayOutfit` (`Shirt`, `Shorts`, `Stocking`), and programme items `ExternalMatchId`
+(the match number people see in the app). Club logos are public at
+`https://logoapi.voetbal.nl/logo.php?clubcode=<ClubId>` (PNG).
 
 Match status: `Status` is `SCHEDULED` or `FINAL` (`StatusDescription` "Uitgespeeld") so far. A called-off
 match keeps `SCHEDULED` with empty scores and says why in `DisciplineStatus`/`DisciplineStatusDescription`,

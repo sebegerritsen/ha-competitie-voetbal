@@ -1,0 +1,256 @@
+{
+ "ClubId": "BBXX01A",
+ "ProgramItemMatchClub": [
+  {
+   "DetailsKey": "M100",
+   "Timestamp": "2026-11-14T10:00:00+0100",
+   "EndTimestamp": null,
+   "Match": {
+    "PublicMatchId": "M100",
+    "ExternalMatchId": 7,
+    "MatchDateTime": "2026-11-14T10:00:00+0100",
+    "Status": "SCHEDULED",
+    "Location": "Sportpark Voorbeeld",
+    "DisciplineStatus": null,
+    "Pool": {
+     "CompetitionKind": "DEFAULT_COMPETITION",
+     "ClassName": "3e klasse (2e fase)",
+     "PoolId": 2002,
+     "PoolName": "24",
+     "SortOrder": 1,
+     "NextMatchDate": null,
+     "PreviousMatchDate": null
+    },
+    "HomeTeam": {
+     "PublicTeamId": "T1000000001",
+     "TeamCode": "JO13-2",
+     "TeamName": "VV Voorbeeld JO13-2",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX01A",
+      "ClubName": "VV Voorbeeld",
+      "City": "VOORDORP",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    },
+    "AwayTeam": {
+     "PublicTeamId": "T2000000001",
+     "TeamCode": "JO13-1",
+     "TeamName": "SV Fictief JO13-1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX02B",
+      "ClubName": "SV Fictief",
+      "City": "NERGENSHUIZEN",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    }
+   }
+  },
+  {
+   "DetailsKey": "M200",
+   "Timestamp": "2026-11-14T09:00:00+0100",
+   "EndTimestamp": null,
+   "Match": {
+    "PublicMatchId": "M200",
+    "ExternalMatchId": 7,
+    "MatchDateTime": "2026-11-14T09:00:00+0100",
+    "Status": "SCHEDULED",
+    "Location": "Sportpark Voorbeeld",
+    "DisciplineStatus": null,
+    "Pool": {
+     "CompetitionKind": "DEFAULT_COMPETITION",
+     "ClassName": "3e klasse (2e fase)",
+     "PoolId": 2002,
+     "PoolName": "24",
+     "SortOrder": 1,
+     "NextMatchDate": null,
+     "PreviousMatchDate": null
+    },
+    "HomeTeam": {
+     "PublicTeamId": "T1000000003",
+     "TeamCode": "JO9-1",
+     "TeamName": "VV Voorbeeld JO9-1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX01A",
+      "ClubName": "VV Voorbeeld",
+      "City": "VOORDORP",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    },
+    "AwayTeam": {
+     "PublicTeamId": "T2000000003",
+     "TeamCode": "JO9-1",
+     "TeamName": "SV Fictief JO9-1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX02B",
+      "ClubName": "SV Fictief",
+      "City": "NERGENSHUIZEN",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    }
+   }
+  },
+  {
+   "DetailsKey": "M201",
+   "Timestamp": "2026-11-14T14:30:00+0100",
+   "EndTimestamp": null,
+   "Match": {
+    "PublicMatchId": "M201",
+    "ExternalMatchId": 7,
+    "MatchDateTime": "2026-11-14T14:30:00+0100",
+    "Status": "SCHEDULED",
+    "Location": "Sportpark Fictief",
+    "DisciplineStatus": null,
+    "Pool": {
+     "CompetitionKind": "DEFAULT_COMPETITION",
+     "ClassName": "3e klasse (2e fase)",
+     "PoolId": 2002,
+     "PoolName": "24",
+     "SortOrder": 1,
+     "NextMatchDate": null,
+     "PreviousMatchDate": null
+    },
+    "HomeTeam": {
+     "PublicTeamId": "T2000000009",
+     "TeamCode": "1",
+     "TeamName": "SV Fictief 1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX02B",
+      "ClubName": "SV Fictief",
+      "City": "NERGENSHUIZEN",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    },
+    "AwayTeam": {
+     "PublicTeamId": "T1000000009",
+     "TeamCode": "1",
+     "TeamName": "VV Voorbeeld 1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX01A",
+      "ClubName": "VV Voorbeeld",
+      "City": "VOORDORP",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    }
+   }
+  },
+  {
+   "DetailsKey": "M202",
+   "Timestamp": "2026-11-21T14:30:00+0100",
+   "EndTimestamp": null,
+   "Match": {
+    "PublicMatchId": "M202",
+    "ExternalMatchId": 7,
+    "MatchDateTime": "2026-11-21T14:30:00+0100",
+    "Status": "SCHEDULED",
+    "Location": "Sportpark Voorbeeld",
+    "DisciplineStatus": null,
+    "Pool": {
+     "CompetitionKind": "DEFAULT_COMPETITION",
+     "ClassName": "3e klasse (2e fase)",
+     "PoolId": 2002,
+     "PoolName": "24",
+     "SortOrder": 1,
+     "NextMatchDate": null,
+     "PreviousMatchDate": null
+    },
+    "HomeTeam": {
+     "PublicTeamId": "T1000000009",
+     "TeamCode": "1",
+     "TeamName": "VV Voorbeeld 1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX01A",
+      "ClubName": "VV Voorbeeld",
+      "City": "VOORDORP",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    },
+    "AwayTeam": {
+     "PublicTeamId": "T2000000009",
+     "TeamCode": "1",
+     "TeamName": "SV Fictief 1",
+     "SportId": "SOCCER-VE-AL",
+     "SportTag": "SATURDAY",
+     "SportDescription": "Veld Algemeen/Zaterdag",
+     "Gender": "Male",
+     "LocalTeam": false,
+     "LogoUrl": null,
+     "Club": {
+      "ClubId": "BBXX02B",
+      "ClubName": "SV Fictief",
+      "City": "NERGENSHUIZEN",
+      "ClubLogo": {
+       "Bucket": "b",
+       "Hash": "00000000000000000000000000000000"
+      }
+     }
+    }
+   }
+  }
+ ],
+ "ProgramItemMatchSportlinkClub": [],
+ "ProgramItemClubEvent": [],
+ "ProgramItemClubTournament": []
+}

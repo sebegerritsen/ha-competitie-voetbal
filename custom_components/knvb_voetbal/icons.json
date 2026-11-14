@@ -3,6 +3,9 @@
     "calendar": {
       "matches": {
         "default": "mdi:soccer"
+      },
+      "club_matches": {
+        "default": "mdi:shield-home"
       }
     },
     "sensor": {
@@ -35,6 +38,30 @@
       },
       "match_weather": {
         "default": "mdi:weather-partly-cloudy"
+      },
+      "points": {
+        "default": "mdi:numeric"
+      },
+      "goal_difference": {
+        "default": "mdi:plus-minus-variant"
+      },
+      "goals_for": {
+        "default": "mdi:soccer"
+      },
+      "goals_against": {
+        "default": "mdi:goal"
+      },
+      "played": {
+        "default": "mdi:counter"
+      },
+      "club_matches_today": {
+        "default": "mdi:calendar-today"
+      },
+      "club_home_matches_today": {
+        "default": "mdi:home-group"
+      },
+      "club_latest_results": {
+        "default": "mdi:scoreboard-outline"
       }
     },
     "binary_sensor": {
@@ -56,6 +83,14 @@
           "result": "mdi:scoreboard"
         }
       }
+    }
+  },
+  "services": {
+    "get_matches": {
+      "service": "mdi:calendar-search"
+    },
+    "get_standing": {
+      "service": "mdi:podium"
     }
   }
 }

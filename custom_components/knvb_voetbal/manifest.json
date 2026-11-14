@@ -1,6 +1,9 @@
 {
   "domain": "knvb_voetbal",
   "name": "KNVB Voetbal",
+  "after_dependencies": [
+    "recorder"
+  ],
   "codeowners": [
     "@sebegerritsen"
   ],

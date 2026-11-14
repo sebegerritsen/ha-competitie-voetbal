@@ -30,7 +30,15 @@ Decided (Nov 2026):
   else the daily item of the match date), last result, standing (+ form, points to leader, season over all
   pools); binary sensor match today; event match update (changes.py, snapshot in a Store per team). Team
   settings live in the subentry data (Reconfigure); a changed subentry reloads the entry. Blueprints in
-  blueprints/automation/knvb_voetbal mirror hockey's.
+  blueprints/automation/knvb_voetbal mirror hockey's. Also: statistics sensors (points, goal difference,
+  goals, played; state_class measurement), period standings and last round on the standing.
+- Second subentry type `club` ("Add club"): KnvbClubCoordinator on club/ClubProgram + ClubMatchResults
+  (2 h, 30 min on match days, 15 min while results come in): calendar, matches today, home matches
+  today, latest results. Event length without MatchInfo comes from the age group in the team code.
+- Actions `get_matches` / `get_standing` (services.py, response only, by device). A 603 from the API
+  raises KnvbApiChangedError → repair issue `api_changed`, cleared on the next good update.
+- HA 2026.x: devices belong to one config entry (`DeviceEntry.config_entry_id`); `config_entries` and
+  `async_get_device(identifiers=)` are deprecated — services.py handles both old and new.
 - Send ETags (`If-None-Match`); only some endpoints answer 304. Poll gently (30 min, 5 min around matches).
 - **Never** call `team/TeamPersons` or other person endpoints; rosters list minors. The client refuses
   any path containing "person".

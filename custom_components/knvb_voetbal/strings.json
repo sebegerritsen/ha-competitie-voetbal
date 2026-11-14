@@ -99,11 +99,47 @@
         "account_not_loaded": "The account is not working at the moment (see its status). Fix that first.",
         "reconfigure_successful": "Settings saved."
       }
+    },
+    "club": {
+      "initiate_flow": {
+        "user": "Add club"
+      },
+      "entry_type": "Club",
+      "step": {
+        "search": {
+          "title": "Follow a club",
+          "description": "Every match of every team of the club: a calendar, today's (home) matches and the latest results.",
+          "data": {
+            "query": "Club name or town"
+          },
+          "data_description": {
+            "query": "For example part of the club's name, or its town."
+          }
+        },
+        "club": {
+          "title": "Pick the club",
+          "data": {
+            "club_id": "Club"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "Could not reach voetbal.nl. Try again later.",
+        "no_clubs_found": "No club found. Try a shorter part of the name, or the town."
+      },
+      "abort": {
+        "already_configured": "This club is already followed.",
+        "account_not_loaded": "The account is not working at the moment (see its status). Fix that first.",
+        "no_settings": "A club has no settings."
+      }
     }
   },
   "entity": {
     "calendar": {
       "matches": {
+        "name": "Matches"
+      },
+      "club_matches": {
         "name": "Matches"
       }
     },
@@ -202,6 +238,18 @@
           },
           "upcoming": {
             "name": "Matches after it"
+          },
+          "departure_time": {
+            "name": "Departure time (club)"
+          },
+          "assembly_time": {
+            "name": "Meet time (club)"
+          },
+          "match_number": {
+            "name": "Match number"
+          },
+          "opponent_colours": {
+            "name": "Opponent's kit (home)"
           }
         }
       },
@@ -277,6 +325,15 @@
           },
           "form": {
             "name": "Form (last 5)"
+          },
+          "match_number": {
+            "name": "Match number"
+          },
+          "opponent_colours": {
+            "name": "Opponent's kit (home)"
+          },
+          "season_results": {
+            "name": "Season results"
           }
         }
       },
@@ -342,6 +399,12 @@
           },
           "season_goals_against": {
             "name": "Season: goals against"
+          },
+          "periods": {
+            "name": "Periods"
+          },
+          "last_round": {
+            "name": "Latest round in the pool"
           }
         }
       },
@@ -450,6 +513,18 @@
           },
           "opponent_logo": {
             "name": "Opponent logo"
+          },
+          "departure_time": {
+            "name": "Departure time (club)"
+          },
+          "assembly_time": {
+            "name": "Meet time (club)"
+          },
+          "match_number": {
+            "name": "Match number"
+          },
+          "opponent_colours": {
+            "name": "Opponent's kit (home)"
           }
         }
       },
@@ -524,6 +599,18 @@
           },
           "opponent_logo": {
             "name": "Opponent logo"
+          },
+          "departure_time": {
+            "name": "Departure time (club)"
+          },
+          "assembly_time": {
+            "name": "Meet time (club)"
+          },
+          "match_number": {
+            "name": "Match number"
+          },
+          "opponent_colours": {
+            "name": "Opponent's kit (home)"
           }
         }
       },
@@ -556,6 +643,68 @@
           },
           "start": {
             "name": "Start"
+          }
+        }
+      },
+      "points": {
+        "name": "Points"
+      },
+      "goal_difference": {
+        "name": "Goal difference"
+      },
+      "goals_for": {
+        "name": "Goals for"
+      },
+      "goals_against": {
+        "name": "Goals against"
+      },
+      "played": {
+        "name": "Played"
+      },
+      "club_matches_today": {
+        "name": "Matches today",
+        "unit_of_measurement": "matches",
+        "state_attributes": {
+          "first_kickoff": {
+            "name": "First kick-off"
+          },
+          "last_kickoff": {
+            "name": "Last kick-off"
+          },
+          "matches": {
+            "name": "Matches"
+          }
+        }
+      },
+      "club_home_matches_today": {
+        "name": "Home matches today",
+        "unit_of_measurement": "matches",
+        "state_attributes": {
+          "first_kickoff": {
+            "name": "First kick-off"
+          },
+          "last_kickoff": {
+            "name": "Last kick-off"
+          },
+          "matches": {
+            "name": "Matches"
+          }
+        }
+      },
+      "club_latest_results": {
+        "name": "Latest results",
+        "state_attributes": {
+          "won": {
+            "name": "Won"
+          },
+          "drawn": {
+            "name": "Drawn"
+          },
+          "lost": {
+            "name": "Lost"
+          },
+          "results": {
+            "name": "Results"
           }
         }
       }
@@ -673,6 +822,47 @@
     },
     "unexpected_response": {
       "message": "Unexpected answer from voetbal.nl: {error}"
+    },
+    "api_changed": {
+      "message": "The voetbal.nl app has changed and this version of the integration no longer fits ({error}). Update the integration."
+    },
+    "unknown_device": {
+      "message": "That device is not a team or club of KNVB Voetbal."
+    },
+    "not_a_team": {
+      "message": "A standing exists only for a team, not for a club."
+    }
+  },
+  "issues": {
+    "api_changed": {
+      "title": "KNVB Voetbal needs an update",
+      "description": "The voetbal.nl app's data service no longer accepts the requests of this version of the integration (the app was updated). Update KNVB Voetbal in HACS; if there is no newer version yet, please report it in the issues."
+    }
+  },
+  "services": {
+    "get_matches": {
+      "name": "Get matches",
+      "description": "Returns the matches of a team (with venue, meet time, score) or of a club.",
+      "fields": {
+        "device_id": {
+          "name": "Team or club",
+          "description": "The team's or club's device."
+        },
+        "upcoming_only": {
+          "name": "Upcoming only",
+          "description": "Leave out played matches."
+        }
+      }
+    },
+    "get_standing": {
+      "name": "Get standing",
+      "description": "Returns the full standing of a team's current pool, with each team's form, and the period standings.",
+      "fields": {
+        "device_id": {
+          "name": "Team",
+          "description": "The team's device."
+        }
+      }
     }
   }
 }

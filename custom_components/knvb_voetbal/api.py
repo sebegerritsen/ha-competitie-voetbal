@@ -23,6 +23,8 @@ from .models import (
     PoolData,
     TeamCompetition,
     TeamRef,
+    parse_club_program,
+    parse_club_results,
     parse_club_teams,
     parse_clubs,
     parse_favorite_teams,
@@ -46,6 +48,8 @@ CLIENT_ID = "oCuV9oozaaz8zee"
 CLIENT_SECRET = "eep7Shoo7i"  # noqa: S105 - the app's public client secret
 
 REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=30)
+# The server's answer to an entity version it doesn't know (the `v` of a request).
+UNKNOWN_ENTITY_VERSION = 603
 
 
 class KnvbError(Exception):
@@ -70,6 +74,10 @@ class KnvbNotFoundError(KnvbError):
 
 class KnvbResponseError(KnvbError):
     """The API answered something unexpected."""
+
+
+class KnvbApiChangedError(KnvbResponseError):
+    """The API no longer knows the request's version (603): the app has moved on."""
 
 
 class KnvbClient:
@@ -197,6 +205,14 @@ class KnvbClient:
         """Return a club's teams."""
         return parse_club_teams(await self.get("club/ClubTeams", 1, {"ClubId": club_id}))
 
+    async def get_club_program(self, club_id: str) -> list[Match]:
+        """Return the club's upcoming matches, all teams."""
+        return parse_club_program(await self.get("club/ClubProgram", 3, {"ClubId": club_id}))
+
+    async def get_club_results(self, club_id: str) -> list[Match]:
+        """Return the club's latest results (about 100), all teams."""
+        return parse_club_results(await self.get("club/ClubMatchResults", 2, {"ClubId": club_id}))
+
     async def get_team_program(self, team_id: str) -> list[Match]:
         """Return the upcoming matches of the team's pools (not only the team's own)."""
         return parse_program(await self.get("team/TeamProgram", 3, {"PublicTeamId": team_id}))
@@ -230,8 +246,9 @@ def _check_status(status: int, path: str) -> None:
         raise KnvbNotFoundError(f"Not found: {path}")
     if HTTPStatus.INTERNAL_SERVER_ERROR <= status < 600:
         raise KnvbConnectionError(f"Server error {status} on {path}")
+    if status == UNKNOWN_ENTITY_VERSION:
+        raise KnvbApiChangedError(f"Unknown entity version for {path}")
     if status >= HTTPStatus.BAD_REQUEST:
-        # Also 603 "Unknown entity version": the app's API has moved on.
         raise KnvbResponseError(f"Unexpected status {status} on {path}")
 
 

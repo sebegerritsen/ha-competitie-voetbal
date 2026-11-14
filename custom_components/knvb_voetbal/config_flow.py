@@ -49,6 +49,7 @@ from .const import (
     DEFAULT_MEET_MINUTES,
     DOMAIN,
     LOGGER,
+    SUBENTRY_CLUB,
     SUBENTRY_TEAM,
 )
 from .models import Club, TeamRef
@@ -145,8 +146,8 @@ class KnvbConfigFlow(ConfigFlow, domain=DOMAIN):
     def async_get_supported_subentry_types(
         cls, config_entry: ConfigEntry
     ) -> dict[str, type[ConfigSubentryFlow]]:
-        """Teams are added to an account as subentries."""
-        return {SUBENTRY_TEAM: TeamSubentryFlow}
+        """Teams and clubs are added to an account as subentries."""
+        return {SUBENTRY_TEAM: TeamSubentryFlow, SUBENTRY_CLUB: ClubSubentryFlow}
 
     async def _login(self, email: str, password: str) -> dict[str, str]:
         """Log in; return form errors (empty on success)."""
@@ -243,6 +244,9 @@ class KnvbConfigFlow(ConfigFlow, domain=DOMAIN):
 class TeamSubentryFlow(ConfigSubentryFlow):
     """Add a team: from the account's favourites, or any team of any club."""
 
+    # A club flow stops at the club step.
+    _club_only = False
+
     def __init__(self) -> None:
         """Initialize the flow."""
         self._favorites: list[TeamRef] = []
@@ -260,7 +264,7 @@ class TeamSubentryFlow(ConfigSubentryFlow):
             subentry.unique_id
             for entry in self.hass.config_entries.async_entries(DOMAIN)
             for subentry in entry.subentries.values()
-            if subentry.unique_id
+            if subentry.unique_id and subentry.subentry_type == SUBENTRY_TEAM
         }
 
     def _add(self, team: TeamRef) -> SubentryFlowResult:
@@ -337,6 +341,8 @@ class TeamSubentryFlow(ConfigSubentryFlow):
         errors: dict[str, str] = {}
         if user_input is not None:
             club = next(c for c in self._found if c.id == user_input[CONF_CLUB_ID])
+            if self._club_only:
+                return self._add_club(club)
             try:
                 teams = await self._client.get_club_teams(club.id)
             except KnvbError as err:
@@ -418,3 +424,39 @@ class TeamSubentryFlow(ConfigSubentryFlow):
             ),
             description_placeholders={"team": subentry.title},
         )
+
+    def _add_club(self, club: Club) -> SubentryFlowResult:
+        raise NotImplementedError  # pragma: no cover - only for club flows
+
+
+class ClubSubentryFlow(TeamSubentryFlow):
+    """Follow a club: every match of all its teams."""
+
+    _club_only = True
+
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> SubentryFlowResult:
+        """Search the club."""
+        if self._get_entry().state is not ConfigEntryState.LOADED:
+            return self.async_abort(reason="account_not_loaded")
+        return await self.async_step_search()
+
+    def _add_club(self, club: Club) -> SubentryFlowResult:
+        configured = {
+            subentry.unique_id
+            for entry in self.hass.config_entries.async_entries(DOMAIN)
+            for subentry in entry.subentries.values()
+            if subentry.subentry_type == SUBENTRY_CLUB
+        }
+        if club.id in configured:
+            return self.async_abort(reason="already_configured")
+        return self.async_create_entry(
+            title=club.name,
+            data={CONF_CLUB_ID: club.id, CONF_CLUB_NAME: club.name},
+            unique_id=club.id,
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """A club has no settings."""
+        return self.async_abort(reason="no_settings")

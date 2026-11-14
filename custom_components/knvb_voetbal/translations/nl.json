@@ -99,11 +99,47 @@
         "account_not_loaded": "Het account werkt op dit moment niet (zie de status). Los dat eerst op.",
         "reconfigure_successful": "Instellingen opgeslagen."
       }
+    },
+    "club": {
+      "initiate_flow": {
+        "user": "Club toevoegen"
+      },
+      "entry_type": "Club",
+      "step": {
+        "search": {
+          "title": "Club volgen",
+          "description": "Alle wedstrijden van alle teams van de club: een agenda, de (thuis)wedstrijden van vandaag en de laatste uitslagen.",
+          "data": {
+            "query": "Clubnaam of plaats"
+          },
+          "data_description": {
+            "query": "Bijvoorbeeld een deel van de clubnaam, of de plaats."
+          }
+        },
+        "club": {
+          "title": "Kies de club",
+          "data": {
+            "club_id": "Club"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "Kan voetbal.nl niet bereiken. Probeer het later opnieuw.",
+        "no_clubs_found": "Geen club gevonden. Probeer een korter deel van de naam, of de plaats."
+      },
+      "abort": {
+        "already_configured": "Deze club wordt al gevolgd.",
+        "account_not_loaded": "Het account werkt op dit moment niet (zie de status). Los dat eerst op.",
+        "no_settings": "Een club heeft geen instellingen."
+      }
     }
   },
   "entity": {
     "calendar": {
       "matches": {
+        "name": "Wedstrijden"
+      },
+      "club_matches": {
         "name": "Wedstrijden"
       }
     },
@@ -202,6 +238,18 @@
           },
           "upcoming": {
             "name": "Wedstrijden daarna"
+          },
+          "departure_time": {
+            "name": "Vertrektijd (club)"
+          },
+          "assembly_time": {
+            "name": "Verzameltijd (club)"
+          },
+          "match_number": {
+            "name": "Wedstrijdnummer"
+          },
+          "opponent_colours": {
+            "name": "Tenue tegenstander (thuis)"
           }
         }
       },
@@ -277,6 +325,15 @@
           },
           "form": {
             "name": "Vorm (laatste 5)"
+          },
+          "match_number": {
+            "name": "Wedstrijdnummer"
+          },
+          "opponent_colours": {
+            "name": "Tenue tegenstander (thuis)"
+          },
+          "season_results": {
+            "name": "Uitslagen dit seizoen"
           }
         }
       },
@@ -342,6 +399,12 @@
           },
           "season_goals_against": {
             "name": "Seizoen: doelpunten tegen"
+          },
+          "periods": {
+            "name": "Periodes"
+          },
+          "last_round": {
+            "name": "Laatste speelronde in de poule"
           }
         }
       },
@@ -450,6 +513,18 @@
           },
           "opponent_logo": {
             "name": "Logo tegenstander"
+          },
+          "departure_time": {
+            "name": "Vertrektijd (club)"
+          },
+          "assembly_time": {
+            "name": "Verzameltijd (club)"
+          },
+          "match_number": {
+            "name": "Wedstrijdnummer"
+          },
+          "opponent_colours": {
+            "name": "Tenue tegenstander (thuis)"
           }
         }
       },
@@ -524,6 +599,18 @@
           },
           "opponent_logo": {
             "name": "Logo tegenstander"
+          },
+          "departure_time": {
+            "name": "Vertrektijd (club)"
+          },
+          "assembly_time": {
+            "name": "Verzameltijd (club)"
+          },
+          "match_number": {
+            "name": "Wedstrijdnummer"
+          },
+          "opponent_colours": {
+            "name": "Tenue tegenstander (thuis)"
           }
         }
       },
@@ -556,6 +643,68 @@
           },
           "start": {
             "name": "Aftrap"
+          }
+        }
+      },
+      "points": {
+        "name": "Punten"
+      },
+      "goal_difference": {
+        "name": "Doelsaldo"
+      },
+      "goals_for": {
+        "name": "Doelpunten voor"
+      },
+      "goals_against": {
+        "name": "Doelpunten tegen"
+      },
+      "played": {
+        "name": "Gespeeld"
+      },
+      "club_matches_today": {
+        "name": "Wedstrijden vandaag",
+        "unit_of_measurement": "wedstrijden",
+        "state_attributes": {
+          "first_kickoff": {
+            "name": "Eerste aftrap"
+          },
+          "last_kickoff": {
+            "name": "Laatste aftrap"
+          },
+          "matches": {
+            "name": "Wedstrijden"
+          }
+        }
+      },
+      "club_home_matches_today": {
+        "name": "Thuiswedstrijden vandaag",
+        "unit_of_measurement": "wedstrijden",
+        "state_attributes": {
+          "first_kickoff": {
+            "name": "Eerste aftrap"
+          },
+          "last_kickoff": {
+            "name": "Laatste aftrap"
+          },
+          "matches": {
+            "name": "Wedstrijden"
+          }
+        }
+      },
+      "club_latest_results": {
+        "name": "Laatste uitslagen",
+        "state_attributes": {
+          "won": {
+            "name": "Gewonnen"
+          },
+          "drawn": {
+            "name": "Gelijk"
+          },
+          "lost": {
+            "name": "Verloren"
+          },
+          "results": {
+            "name": "Uitslagen"
           }
         }
       }
@@ -673,6 +822,47 @@
     },
     "unexpected_response": {
       "message": "Onverwacht antwoord van voetbal.nl: {error}"
+    },
+    "api_changed": {
+      "message": "De voetbal.nl-app is veranderd en deze versie van de integratie past niet meer ({error}). Werk de integratie bij."
+    },
+    "unknown_device": {
+      "message": "Dat apparaat is geen team of club van KNVB Voetbal."
+    },
+    "not_a_team": {
+      "message": "Een stand bestaat alleen voor een team, niet voor een club."
+    }
+  },
+  "issues": {
+    "api_changed": {
+      "title": "KNVB Voetbal moet worden bijgewerkt",
+      "description": "De gegevensdienst van de voetbal.nl-app accepteert de verzoeken van deze versie van de integratie niet meer (de app is bijgewerkt). Werk KNVB Voetbal bij in HACS; is er nog geen nieuwere versie, meld het dan bij de issues."
+    }
+  },
+  "services": {
+    "get_matches": {
+      "name": "Wedstrijden ophalen",
+      "description": "Geeft de wedstrijden van een team (met locatie, verzameltijd, uitslag) of van een club.",
+      "fields": {
+        "device_id": {
+          "name": "Team of club",
+          "description": "Het apparaat van het team of de club."
+        },
+        "upcoming_only": {
+          "name": "Alleen komende",
+          "description": "Gespeelde wedstrijden weglaten."
+        }
+      }
+    },
+    "get_standing": {
+      "name": "Stand ophalen",
+      "description": "Geeft de volledige stand van de huidige poule van een team, met de vorm van elk team, en de periodestanden.",
+      "fields": {
+        "device_id": {
+          "name": "Team",
+          "description": "Het apparaat van het team."
+        }
+      }
     }
   }
 }

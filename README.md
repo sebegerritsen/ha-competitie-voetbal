@@ -14,15 +14,16 @@ already follow in the voetbal.nl app, or any team of any club. Per team you get 
 | Entity | State | Details (attributes) |
 |---|---|---|
 | **Calendar** (named after the team) | on during a match | every match of the season, all phases and cup rounds: home – away, the score once played, venue and address; the description has the pitch, your team's dressing room and the departure time |
-| **Next match** | kick-off time | opponent (with club logo, position, points and recent form), home or away, venue, address, pitch, dressing room, meet time, cup or league, expected end, the previous meeting with this opponent, and the matches after it |
+| **Next match** | kick-off time | opponent (with club logo, kit colours, position, points and recent form), home or away, venue, address, pitch, dressing room, meet time, the club's meet and departure times, match number, cup or league, expected end, the previous meeting with this opponent, and the matches after it |
 | **Next opponent** | the opponent's name (with their logo) | home or away, kick-off, venue, club, their position, points and form |
 | **Home or away** | home or away | the details of the next match |
-| **Meet time** | when the team meets | the club's departure time (*vertrektijd*) when the club entered one; otherwise kick-off minus 30 minutes, or what you set (home and away separately) |
+| **Meet time** | when the team meets | the club's meet time (*verzameltijd*) or departure time (*vertrektijd*) when the club entered one; otherwise kick-off minus 30 minutes, or what you set (home and away separately) |
 | **Match today** | on all day on match days | kick-off, meet time, opponent, venue, pitch, dressing room |
 | **Match update** (event) | fires on a change | *called off*, *back on*, *rescheduled*, *venue or pitch changed*, *result*, with the details of the match |
 | **Weather at next match** | temperature | optional: the forecast at kick-off from a weather entity you pick (chance of rain, feels-like, wind), from 48 hours before |
 | **Last result** | win, draw or loss | score (with extra time and penalties), goals for and against, opponent, form (last 5) |
-| **Standing** | position in the pool | points, played, won/drawn/lost, goals, goal difference, penalty points, points behind the leader, form, the season so far over all phases (played, won/drawn/lost, goals), and the whole table |
+| **Standing** | position in the pool | points, played, won/drawn/lost, goals, goal difference, penalty points, points behind the leader, form, the season so far over all phases (played, won/drawn/lost, goals), period standings (*periodestanden*, senior pools), the latest round's results in the pool, and the whole table |
+| **Points**, **Goal difference** (+ *Goals for*, *Goals against*, *Played*, off by default) | the number | with long-term statistics, so Home Assistant can graph the season |
 
 - Youth teams change pools during the season (1st, 2nd, 3rd phase): all their matches stay in the
   calendar, and the *Standing* follows the current pool.
@@ -36,6 +37,28 @@ already follow in the voetbal.nl app, or any team of any club. Per team you get 
 - Data is fetched every 30 minutes, every 5 minutes around the team's own matches, and every few hours
   when there is nothing coming up.
 - Dutch and English.
+
+### Follow a whole club
+
+**Add club** on the integration's page follows every team of a club, for example when several children
+play there, or for whoever runs the canteen on Saturdays. The club gets a device with:
+
+| Entity | State | Details |
+|---|---|---|
+| **Calendar** (named after the club) | on during a match | every match of every team: upcoming ones and the latest results |
+| **Matches today** | number of matches | first and last kick-off, and each match: team, opponent, home or away, venue, score once played |
+| **Home matches today** | number of home matches | the same, home matches only |
+| **Latest results** | the date of the club's latest match day | won, drawn, lost, and each result |
+
+### Actions
+
+- `knvb_voetbal.get_matches`: the matches of a team (with venue, meet time and score) or a club, as a
+  response, optionally upcoming ones only. For scripts, dashboards and voice assistants.
+- `knvb_voetbal.get_standing`: the full standing of a team's pool, with each team's form, and the
+  period standings.
+
+If the voetbal.nl app changes its data service so that this version no longer fits, Home Assistant
+shows a repair asking to update the integration.
 
 ### Team settings
 

@@ -7,11 +7,21 @@ from typing import Any
 
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.typing import ConfigType
 
 from .api import KnvbClient
-from .const import CONF_REFRESH_TOKEN, SUBENTRY_TEAM
-from .coordinator import KnvbConfigEntry, KnvbRuntimeData, KnvbTeamCoordinator
+from .const import CONF_REFRESH_TOKEN, DOMAIN, SUBENTRY_CLUB, SUBENTRY_TEAM
+from .coordinator import (
+    KnvbClubCoordinator,
+    KnvbConfigEntry,
+    KnvbRuntimeData,
+    KnvbTeamCoordinator,
+)
+from .services import async_setup_services
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -19,6 +29,12 @@ PLATFORMS: list[Platform] = [
     Platform.EVENT,
     Platform.SENSOR,
 ]
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the integration's actions."""
+    async_setup_services(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: KnvbConfigEntry) -> bool:
@@ -40,10 +56,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: KnvbConfigEntry) -> bool
     for subentry_id, subentry in entry.subentries.items():
         if subentry.subentry_type == SUBENTRY_TEAM:
             runtime.coordinators[subentry_id] = KnvbTeamCoordinator(hass, entry, subentry, client)
+        elif subentry.subentry_type == SUBENTRY_CLUB:
+            runtime.clubs[subentry_id] = KnvbClubCoordinator(hass, entry, subentry, client)
     await asyncio.gather(
         *(
             coordinator.async_config_entry_first_refresh()
-            for coordinator in runtime.coordinators.values()
+            for coordinator in [*runtime.coordinators.values(), *runtime.clubs.values()]
         )
     )
     entry.runtime_data = runtime

@@ -58,3 +58,9 @@ WEATHER_REFRESH: Final = timedelta(minutes=30)
 
 # The matches as last seen (to notice changes), kept across restarts
 STORAGE_VERSION: Final = 1
+
+# Club subentry: every match of a club
+SUBENTRY_CLUB: Final = "club"
+CLUB_UPDATE_INTERVAL: Final = timedelta(hours=2)
+CLUB_UPDATE_INTERVAL_MATCH_DAY: Final = timedelta(minutes=30)
+CLUB_UPDATE_INTERVAL_RESULTS: Final = timedelta(minutes=15)
