@@ -1,0 +1,31 @@
+{
+ "Pool": [
+  {
+   "CompetitionKind": "DEFAULT_COMPETITION",
+   "ClassName": "3e klasse (1e fase)",
+   "PoolId": 2001,
+   "PoolName": "37",
+   "SortOrder": 1,
+   "NextMatchDate": null,
+   "PreviousMatchDate": "2026-10-03T09:00:00+0200"
+  },
+  {
+   "CompetitionKind": "DEFAULT_COMPETITION",
+   "ClassName": "3e klasse (2e fase)",
+   "PoolId": 2002,
+   "PoolName": "24",
+   "SortOrder": 1,
+   "NextMatchDate": "2026-11-14T10:00:00+0100",
+   "PreviousMatchDate": "2026-11-07T08:30:00+0100"
+  }
+ ],
+ "UnboundMatchResults": {
+  "MatchResult": []
+ },
+ "SportlinkClubMatchResults": {
+  "MatchResult": []
+ },
+ "TournamentMatchResults": {
+  "MatchResult": []
+ }
+}

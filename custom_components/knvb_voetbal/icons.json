@@ -1,0 +1,61 @@
+{
+  "entity": {
+    "calendar": {
+      "matches": {
+        "default": "mdi:soccer"
+      }
+    },
+    "sensor": {
+      "next_match": {
+        "default": "mdi:soccer-field"
+      },
+      "last_result": {
+        "default": "mdi:scoreboard",
+        "state": {
+          "win": "mdi:trophy",
+          "draw": "mdi:scale-balance",
+          "loss": "mdi:emoticon-sad-outline"
+        }
+      },
+      "standing": {
+        "default": "mdi:podium"
+      },
+      "opponent": {
+        "default": "mdi:shield-half-full"
+      },
+      "home_away": {
+        "default": "mdi:home-switch",
+        "state": {
+          "home": "mdi:home",
+          "away": "mdi:bus"
+        }
+      },
+      "meet_time": {
+        "default": "mdi:account-group"
+      },
+      "match_weather": {
+        "default": "mdi:weather-partly-cloudy"
+      }
+    },
+    "binary_sensor": {
+      "match_today": {
+        "default": "mdi:soccer",
+        "state": {
+          "off": "mdi:calendar-blank"
+        }
+      }
+    },
+    "event": {
+      "match_update": {
+        "default": "mdi:bell-ring",
+        "state": {
+          "cancelled": "mdi:cancel",
+          "reinstated": "mdi:check-circle",
+          "rescheduled": "mdi:calendar-clock",
+          "location_changed": "mdi:map-marker-alert",
+          "result": "mdi:scoreboard"
+        }
+      }
+    }
+  }
+}

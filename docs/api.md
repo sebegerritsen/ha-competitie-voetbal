@@ -28,8 +28,12 @@ Renew without the password:
 grant_type=refresh_token&refresh_token=<refresh token>&client_id=<app client id>&secret=<app secret>
 ```
 
-Returns a new access token **and a new refresh token** (rotate and store it). The client id and secret
-are fixed values from the app (field name `secret`, not `client_secret`). `POST /oauth/logout` ends the
+Returns a new access token **and a new refresh token**. Refresh tokens are **single use**: the old refresh
+token is refused right after (`400 {"error": "invalid_grant"}`) and the old access token too (401), so
+store the new one at once and never refresh twice in parallel. A wrong password gives
+`400 {"error": "Inloggen niet mogelijk", "description": "onjuiste inloggegevens"}`. Several sessions per
+account coexist: logging in elsewhere (the app on a phone) does not end an older session. The client id
+and secret are fixed values from the app (field name `secret`, not `client_secret`). `POST /oauth/logout` ends the
 session (the app calls it when you back out of registration).
 
 A new account must complete a short registration once (name, initials, date of birth, gender; address
@@ -50,21 +54,31 @@ Required headers (without the right User-Agent the server answers **500**):
 | `User-Agent` | the app's format: `sportlink-app-voetbalnl/<version>-<build> android <device>/<os>  (<version>)` |
 | `Accept-Encoding` | `gzip` (responses are gzip) |
 
-Responses carry `ETag` and `Cache-Control: max-age=86400, s-maxage=300, private`; conditional requests
-(`If-None-Match`) get 304.
+Responses carry `ETag` and `Cache-Control: max-age=86400, s-maxage=300, private`. Conditional requests
+(`If-None-Match`) get 304 on some endpoints (`user/favorite/Favorites`), but not on those with `s-maxage`
+(`team/TeamProgram` answered 200 with the same ETag): send them, don't rely on them. A wrong `v` gives
+status **603** ("Unknown entity version").
 
 | Request | Returns |
 |---|---|
 | `club/Clubs?v=1` | All ~2,800 clubs: `ClubId` (e.g. `BBxx00X`), `ClubName`, `City`, `ClubLogo`. |
 | `club/ClubTeams?v=1&ClubId=<id>` | The club's teams: `PublicTeamId` (`T…`), `TeamCode` (`O12-1`, `1`, …), `TeamName`, `Gender`, `SportId` (`SOCCER-VE-AL` = field, Saturday/Sunday in `SportTag`), `SportDescription`, `Class[]`. |
-| `team/TeamProgram?v=3&PublicTeamId=<id>` | Upcoming matches: `ProgramItemMatch[]` → `Match` with `PublicMatchId`, `MatchDateTime`, `Status` (`SCHEDULED`, …), `Location` (venue name), `Pool`, `HomeTeam`, `AwayTeam`. |
-| `team/TeamCompetitionData?v=2&PublicTeamId=<id>` | The team's pools: `PoolId`, `ClassName`, `PoolName`, `NextMatchDate`, `PreviousMatchDate`. |
+| `team/TeamProgram?v=3&PublicTeamId=<id>` | Upcoming matches **of the team's pool, not only the team's own** (own first): `ProgramItemMatch[]` → `Match` with `PublicMatchId`, `MatchDateTime` (`2026-11-14T10:00:00+0100`), `Status` (`SCHEDULED`, …), `Location` (venue name), `DisciplineStatus`, `Pool`, `HomeTeam`, `AwayTeam`. Filter on `PublicTeamId`. |
+| `team/TeamCompetitionData?v=2&PublicTeamId=<id>` | The team's pools this season (a youth team typically has one per phase): `PoolId`, `ClassName`, `PoolName`, `CompetitionKind` (`DEFAULT_COMPETITION`, `TROPHY_COMPETITION` = cup), `NextMatchDate`, `PreviousMatchDate`; plus results outside pools (`UnboundMatchResults`, `SportlinkClubMatchResults`, `TournamentMatchResults`, each `{MatchResult: []}`). |
 | `team/TeamPoolAssignments?v=2&PublicTeamId=<id>` | Pool assignments over the season. |
 | `pool/PoolCompetitionData?v=2&PoolId=<id>` | The pool's results (`MatchResult[]`: `Status` `FINAL`, `StatusDescription`, `HomeResult`/`AwayResult` with `Score`, `ExtensionScore`, `PenaltyScore`) and standing (`PoolStanding.PoolStandingTeam[]`: `Position`, `TotalPoints`, `TotalMatches`, `Won`, `Draw`, `Lost`, `GoalsFor`, `GoalsAgainst`, `GoalsDifference`, `PenaltyPoints`). |
 | `team/TeamMatchEventStatistics?v=2&PublicTeamId=<id>` | Match event statistics (goals etc.). |
+| `match/MatchFacility?v=2&PublicMatchId=<id>` | Where a match is played: `FacilityName`, `Address`, `ZipCode`, `City`, `SubFacilityName` (pitch, `veld 2`), `HomeDressingRoom`, `AwayDressingRoom`, `DepartureTime` (`09:20:00`), `PhoneNumber` (the venue's). |
+| `match/MatchInfo?v=1&PublicMatchId=<id>` | Match number and district, and the class rules in `ClassExtraAttributes`, incl. `NetPlayingTime` (minutes on the clock: 90 seniors, 80 O17, 60 O11–O13, 50 O10, 40 O8) and `GrossPlayingTime` (the booked slot: 135 seniors, 105 O13). Same for every match of a class. |
+| `club/ClubProgram?v=3&ClubId=<id>`, `club/ClubMatchResults?v=2&ClubId=<id>` | The club's programme (`ProgramItemMatchClub[]`, `TeamCode` is `-` there) and its latest 100 results. |
 | `user/favorite/Favorites?v=2` | The account's followed teams/clubs (`FavoriteTeam[]` with `PublicTeamId`, `Club.ClubId`): handy for a config flow ("pick from your favourites"). |
 | `user/User?v=2`, `user/UserPersonalData?v=4` | The account itself (personal data: don't log). |
 | `team/TeamPersons?PublicTeamId=<id>` | The team roster: **names of players, often minors. An integration should not fetch or store this.** |
+
+Match status: `Status` is `SCHEDULED` or `FINAL` (`StatusDescription` "Uitgespeeld") so far. A called-off
+match keeps `SCHEDULED` with empty scores and says why in `DisciplineStatus`/`DisciplineStatusDescription`,
+e.g. `ADO` / "Afgelast door vereniging". How a live match, an abandoned one or a later kick-off show up is
+still to be seen (issue #9).
 
 More endpoint names are in the app (club news, agenda, match details, officials, transport, presence):
 `club/ClubProgram`, `club/ClubMatchResults`, `match/MatchInfo`, `match/MatchFacility`, `pool/PoolProgram`, …;

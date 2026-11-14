@@ -1,0 +1,16 @@
+{
+ "ClubInformationUrl": null,
+ "CoronaUrl": null,
+ "DepartureTime": "09:15:00",
+ "AssemblyTime": null,
+ "FacilityId": "BBXX99Z",
+ "FacilityName": "Sportpark Voorbeeld",
+ "City": "VOORDORP",
+ "Address": "Voorbeeldlaan 1",
+ "ZipCode": "1234AB",
+ "PhoneNumber": "000-0000000",
+ "HomeDressingRoom": "3",
+ "AwayDressingRoom": "4",
+ "OfficialDressingRoom": "",
+ "SubFacilityName": "veld 2"
+}

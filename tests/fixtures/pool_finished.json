@@ -1,0 +1,218 @@
+{
+ "ResultsFiltered": false,
+ "Topscorers": [],
+ "PeriodStanding": [],
+ "MatchResult": [
+  {
+   "PublicMatchId": "M080",
+   "ExternalMatchId": 1,
+   "Status": "FINAL",
+   "StatusDescription": "Uitgespeeld",
+   "MatchDateTime": "2026-10-03T09:00:00+0200",
+   "AutoResult": null,
+   "DisciplineStatus": "",
+   "DisciplineStatusDescription": "",
+   "RoundNr": null,
+   "HighlightHome": null,
+   "HighlightAway": null,
+   "Location": null,
+   "HomeTeam": {
+    "PublicTeamId": "T4000000001",
+    "TeamCode": "JO13-1",
+    "TeamName": "VV Verzonnen JO13-1",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "Club": {
+     "ClubId": "BBXX04D",
+     "ClubName": "VV Verzonnen",
+     "City": "DORP AAN ZEE",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   },
+   "AwayTeam": {
+    "PublicTeamId": "T1000000001",
+    "TeamCode": "JO13-2",
+    "TeamName": "VV Voorbeeld JO13-2",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "Club": {
+     "ClubId": "BBXX01A",
+     "ClubName": "VV Voorbeeld",
+     "City": "VOORDORP",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   },
+   "Pool": {
+    "CompetitionKind": "DEFAULT_COMPETITION",
+    "ClassName": "3e klasse (1e fase)",
+    "PoolId": 2001,
+    "PoolName": "37",
+    "SortOrder": 1,
+    "NextMatchDate": null,
+    "PreviousMatchDate": null
+   },
+   "HomeResult": {
+    "Score": 2,
+    "ExtensionScore": null,
+    "PenaltyScore": null
+   },
+   "AwayResult": {
+    "Score": 0,
+    "ExtensionScore": null,
+    "PenaltyScore": null
+   }
+  },
+  {
+   "PublicMatchId": "M081",
+   "ExternalMatchId": 1,
+   "Status": "SCHEDULED",
+   "StatusDescription": "gepland",
+   "MatchDateTime": "2026-09-26T09:00:00+0200",
+   "AutoResult": null,
+   "DisciplineStatus": "ADO",
+   "DisciplineStatusDescription": "Afgelast door vereniging",
+   "RoundNr": null,
+   "HighlightHome": null,
+   "HighlightAway": null,
+   "Location": null,
+   "HomeTeam": {
+    "PublicTeamId": "T1000000001",
+    "TeamCode": "JO13-2",
+    "TeamName": "VV Voorbeeld JO13-2",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "Club": {
+     "ClubId": "BBXX01A",
+     "ClubName": "VV Voorbeeld",
+     "City": "VOORDORP",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   },
+   "AwayTeam": {
+    "PublicTeamId": "T4000000001",
+    "TeamCode": "JO13-1",
+    "TeamName": "VV Verzonnen JO13-1",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "Club": {
+     "ClubId": "BBXX04D",
+     "ClubName": "VV Verzonnen",
+     "City": "DORP AAN ZEE",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   },
+   "Pool": {
+    "CompetitionKind": "DEFAULT_COMPETITION",
+    "ClassName": "3e klasse (1e fase)",
+    "PoolId": 2001,
+    "PoolName": "37",
+    "SortOrder": 1,
+    "NextMatchDate": null,
+    "PreviousMatchDate": null
+   },
+   "HomeResult": {
+    "Score": null,
+    "ExtensionScore": null,
+    "PenaltyScore": null
+   },
+   "AwayResult": {
+    "Score": null,
+    "ExtensionScore": null,
+    "PenaltyScore": null
+   }
+  }
+ ],
+ "PoolStanding": {
+  "ExtraHeaderPosition": null,
+  "PoolStandingTeam": [
+   {
+    "Position": 1,
+    "PublicTeamId": "T4000000001",
+    "TeamCode": "JO13-1",
+    "TeamName": "VV Verzonnen JO13-1",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "TotalPoints": 3,
+    "TotalMatches": 1,
+    "Won": 1,
+    "Draw": 0,
+    "Lost": 0,
+    "GoalsFor": 2,
+    "GoalsAgainst": 0,
+    "GoalsDifference": 2,
+    "PenaltyPoints": 0,
+    "Club": {
+     "ClubId": "BBXX04D",
+     "ClubName": "VV Verzonnen",
+     "City": "DORP AAN ZEE",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   },
+   {
+    "Position": 2,
+    "PublicTeamId": "T1000000001",
+    "TeamCode": "JO13-2",
+    "TeamName": "VV Voorbeeld JO13-2",
+    "SportId": "SOCCER-VE-AL",
+    "SportTag": "SATURDAY",
+    "SportDescription": "Veld Algemeen/Zaterdag",
+    "Gender": "Male",
+    "LocalTeam": false,
+    "LogoUrl": null,
+    "TotalPoints": 0,
+    "TotalMatches": 1,
+    "Won": 0,
+    "Draw": 0,
+    "Lost": 1,
+    "GoalsFor": 0,
+    "GoalsAgainst": 2,
+    "GoalsDifference": -2,
+    "PenaltyPoints": 0,
+    "Club": {
+     "ClubId": "BBXX01A",
+     "ClubName": "VV Voorbeeld",
+     "City": "VOORDORP",
+     "ClubLogo": {
+      "Bucket": "b",
+      "Hash": "00000000000000000000000000000000"
+     }
+    }
+   }
+  ]
+ }
+}

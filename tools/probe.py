@@ -2,7 +2,8 @@
 """Explore the voetbal.nl app API (Sportlink, KNVB) from the command line, with your own account.
 
     export VOETBAL_EMAIL=you@example.com VOETBAL_PASSWORD=...
-    export SPORTLINK_CLIENT_ID=... SPORTLINK_CLIENT_SECRET=...   # the app's fixed values, see docs/api.md
+    # the app's fixed values, see docs/api.md:
+    export SPORTLINK_CLIENT_ID=... SPORTLINK_CLIENT_SECRET=...
     python3 tools/probe.py 'club/Clubs?v=1'
     python3 tools/probe.py 'club/ClubTeams?v=1&ClubId=<club id>'
     python3 tools/probe.py 'team/TeamProgram?v=3&PublicTeamId=<team id>'
@@ -11,6 +12,7 @@ Prints the JSON response. The session (access + refresh token) is kept in
 ~/.cache/knvb-voetbal-probe.json (mode 0600); your password is only used when there is no
 valid refresh token. Never use this to fetch rosters or other personal data.
 """
+
 from __future__ import annotations
 
 import gzip
@@ -46,8 +48,11 @@ def _save(state: dict) -> None:
 
 def _token_request(fields: dict) -> dict:
     fields |= {"client_id": _env("SPORTLINK_CLIENT_ID"), "secret": _env("SPORTLINK_CLIENT_SECRET")}
-    req = urllib.request.Request(BASE_URL + "/oauth/token", data=urllib.parse.urlencode(fields).encode(),
-                                 headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": USER_AGENT})
+    req = urllib.request.Request(
+        BASE_URL + "/oauth/token",
+        data=urllib.parse.urlencode(fields).encode(),
+        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": USER_AGENT},
+    )
     with urllib.request.urlopen(req, timeout=30) as resp:
         token = json.load(resp)
     token["expires_at"] = time.time() + token.get("expires_in", 3600)
@@ -65,11 +70,18 @@ def access_token() -> str:
         return state["access_token"]
     if state.get("refresh_token"):
         try:
-            return _token_request({"grant_type": "refresh_token", "refresh_token": state["refresh_token"]})["access_token"]
+            return _token_request(
+                {"grant_type": "refresh_token", "refresh_token": state["refresh_token"]}
+            )["access_token"]
         except urllib.error.HTTPError:
             pass  # refresh token expired: log in again
-    return _token_request({"grant_type": "password", "username": _env("VOETBAL_EMAIL"),
-                           "password": _env("VOETBAL_PASSWORD")})["access_token"]
+    return _token_request(
+        {
+            "grant_type": "password",
+            "username": _env("VOETBAL_EMAIL"),
+            "password": _env("VOETBAL_PASSWORD"),
+        }
+    )["access_token"]
 
 
 def get(path: str):
@@ -82,7 +94,9 @@ def get(path: str):
         "Accept-Encoding": "gzip",
         "User-Agent": USER_AGENT,
     }
-    with urllib.request.urlopen(urllib.request.Request(BASE_URL + DATA_PATH + path, headers=headers), timeout=30) as resp:
+    with urllib.request.urlopen(
+        urllib.request.Request(BASE_URL + DATA_PATH + path, headers=headers), timeout=30
+    ) as resp:
         raw = resp.read()
         if resp.headers.get("Content-Encoding") == "gzip":
             raw = gzip.decompress(raw)

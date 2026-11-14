@@ -1,0 +1,49 @@
+{
+ "Club": [
+  {
+   "ClubId": "BBXX01A",
+   "ClubName": "VV Voorbeeld",
+   "City": "VOORDORP",
+   "ClubLogo": {
+    "Bucket": "b",
+    "Hash": "00000000000000000000000000000000"
+   }
+  },
+  {
+   "ClubId": "BBXX02B",
+   "ClubName": "SV Fictief",
+   "City": "NERGENSHUIZEN",
+   "ClubLogo": {
+    "Bucket": "b",
+    "Hash": "00000000000000000000000000000000"
+   }
+  },
+  {
+   "ClubId": "BBXX03C",
+   "ClubName": "RKVV Denkbeeld",
+   "City": "ERGENS",
+   "ClubLogo": {
+    "Bucket": "b",
+    "Hash": "00000000000000000000000000000000"
+   }
+  },
+  {
+   "ClubId": "BBXX04D",
+   "ClubName": "VV Verzonnen",
+   "City": "DORP AAN ZEE",
+   "ClubLogo": {
+    "Bucket": "b",
+    "Hash": "00000000000000000000000000000000"
+   }
+  },
+  {
+   "ClubId": "BBXX05E",
+   "ClubName": "VV Voorbeeldige Vrienden",
+   "City": "ELDERS",
+   "ClubLogo": {
+    "Bucket": "b",
+    "Hash": "00000000000000000000000000000000"
+   }
+  }
+ ]
+}

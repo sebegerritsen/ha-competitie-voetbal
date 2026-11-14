@@ -14,17 +14,34 @@ works (OAuth password + refresh grant, required headers incl. the app User-Agent
 
 Decided (Nov 2026):
 - The user logs in with their own voetbal.nl account (spectator/parent accounts work). Store only the
-  refresh token after setup (it rotates on every refresh: save the new one), never the password;
-  implement a reauth flow for when it expires.
-- Config flow: log in → pick teams from the account's favourites (`user/favorite/Favorites?v=2`) or search
-  a club (`club/Clubs?v=1`) and pick a team (`club/ClubTeams?v=1`). One config entry per account with a
-  subentry per team is worth considering, since one login serves many teams.
-- Per team: calendar (from `team/TeamProgram?v=3` + results from `pool/PoolCompetitionData?v=2`), sensors
-  next match, last result, standing.
-- Use ETags (`If-None-Match`); poll gently.
-- **Never** call `team/TeamPersons` or other person endpoints; rosters list minors.
-- The app's client id and secret are fixed values in the app; where they live in the code (constant vs.
-  configurable) is still to decide. Mention clearly in the README that the integration acts as the app.
+  refresh token, never the password. **Refresh tokens are single use**: every refresh returns a new one
+  and the old one dies at once, so the client serialises refreshes behind a lock and the new token is
+  written to the entry immediately (`on_refresh_token`). invalid_grant → `ConfigEntryAuthFailed` → reauth.
+- **One config entry per account, a subentry (`team`) per team**: one login serves all teams. Initial flow:
+  log in → tick favourites. Subentry flow "Add team": a favourite, or search club → pick team. The entry
+  reloads only when its set of subentries changes (token updates also fire the update listener).
+- Per team (one coordinator): `team/TeamProgram?v=3` (the whole pool's upcoming matches: filter on the
+  team), `team/TeamCompetitionData?v=2` (pools of the season + friendlies), `pool/PoolCompetitionData?v=2`
+  per pool (finished pools twice a day), `match/MatchFacility?v=2` for the coming week (address, pitch,
+  dressing rooms, departure), `match/MatchInfo?v=1` once a day per pool (playing time → event length).
+- Entities per team, matching ha-knhb-hockey and more: calendar; sensors next match, next opponent (club
+  logo via `logoapi.voetbal.nl/logo.php?clubcode=<ClubId>`), home/away, meet time (the club's DepartureTime,
+  else kick-off minus the team's setting), weather at next match (only with a weather entity set; hourly,
+  else the daily item of the match date), last result, standing (+ form, points to leader, season over all
+  pools); binary sensor match today; event match update (changes.py, snapshot in a Store per team). Team
+  settings live in the subentry data (Reconfigure); a changed subentry reloads the entry. Blueprints in
+  blueprints/automation/knvb_voetbal mirror hockey's.
+- Send ETags (`If-None-Match`); only some endpoints answer 304. Poll gently (30 min, 5 min around matches).
+- **Never** call `team/TeamPersons` or other person endpoints; rosters list minors. The client refuses
+  any path containing "person".
+- The app's client id/secret and User-Agent are constants in `api.py` (they are in the public app anyway);
+  an app update may need a release. The README says clearly that the integration acts as the app.
+
+## Development
+
+Tests and lint as in the sibling project: a Python 3.14 venv with `requirements_test.txt` + ruff, then
+`pytest` and `ruff check . && ruff format --check .` (CI runs the same, plus hassfest and HACS).
+Fixtures in tests/fixtures are made up in the API's exact shapes.
 
 ## Testing locally
 
