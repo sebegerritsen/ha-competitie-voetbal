@@ -1,0 +1,274 @@
+# Example dashboard for KNVB Voetbal (the one in the screenshots).
+#
+# Needs the "HTML Jinja2 Template card" from HACS (custom:html-template-card).
+# 1. Replace `vv_voorbeeld_jo13_2` with your team's entity id part (the part between
+#    `sensor.` and `_next_match`), `vv_voorbeeld` with your club's (if you follow one,
+#    see "Add club"), and `weather.home` with your weather entity.
+# 2. Settings → Dashboards → Add dashboard → New dashboard from scratch, open it,
+#    ⋮ → Edit dashboard → ⋮ → Raw configuration editor, and paste this file.
+# The texts are in Dutch; the cards read the integration's entities and attributes.
+title: Voetbal
+views:
+- title: Wedstrijd
+  path: wedstrijd
+  icon: mdi:soccer
+  type: sections
+  max_columns: 3
+  badges:
+  - type: entity
+    entity: binary_sensor.vv_voorbeeld_jo13_2_match_today
+    show_name: true
+    show_state: true
+    show_icon: true
+  - type: entity
+    entity: event.vv_voorbeeld_jo13_2_match_update
+    show_name: true
+    show_state: true
+    show_icon: true
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Volgende wedstrijd
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set m = states['sensor.vv_voorbeeld_jo13_2_next_match'] %}
+        {% if m is none or m.state in ['unknown', 'unavailable'] %}
+        <div style="padding:16px;text-align:center;color:var(--secondary-text-color)">Geen wedstrijd gepland.</div>
+        {% else %}{% set a = m.attributes %}{% set ko = as_local(as_datetime(m.state)) %}
+        {% set eigen = state_attr('sensor.vv_voorbeeld_jo13_2_standing', 'entity_picture') %}
+        {% set thuislogo = eigen if a.home_away == 'home' else a.opponent_logo %}{% set uitlogo = a.opponent_logo if a.home_away == 'home' else eigen %}
+        {% set d = (ko.date() - now().date()).days %}
+        <div style="padding:16px;text-align:center">
+        <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--secondary-text-color)">{{ a.competition }}{% if a.cup %} · beker{% endif %}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 6px">
+        <div style="flex:1;min-width:0"><img src="{{ thuislogo }}" style="width:64px;height:64px;object-fit:contain"><div style="font-weight:600;margin-top:6px">{{ a.home_team }}</div></div>
+        <div style="font-size:30px;font-weight:700;padding:0 6px">{{ ko.strftime('%H:%M') }}</div>
+        <div style="flex:1;min-width:0"><img src="{{ uitlogo }}" style="width:64px;height:64px;object-fit:contain"><div style="font-weight:600;margin-top:6px">{{ a.away_team }}</div></div>
+        </div>
+        <div style="font-size:15px">{{ dagen[ko.weekday()] | capitalize }} {{ ko.day }} {{ maanden[ko.month - 1] }}
+        · <b>{{ 'vandaag' if d == 0 else 'morgen' if d == 1 else 'over ' ~ d ~ ' dagen' }}</b>
+        · {{ 'thuis' if a.home_away == 'home' else 'uit' }}</div>
+        {% if a.status_note %}<div style="margin-top:8px;color:var(--error-color)">{{ a.status_note }}</div>{% endif %}
+        </div>{% endif %}
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set m = states['sensor.vv_voorbeeld_jo13_2_next_match'] %}
+        {% if m is not none and m.state not in ['unknown', 'unavailable'] %}{% set a = m.attributes %}
+        {% macro rij(icoon, label, waarde, extra='') %}<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--divider-color)"><ha-icon icon="{{ icoon }}" style="color:var(--primary-color)"></ha-icon><div style="flex:1"><div style="font-size:12px;color:var(--secondary-text-color)">{{ label }}</div><div style="font-size:15px">{{ waarde }}{{ extra }}</div></div></div>{% endmacro %}
+        <div style="padding:4px 16px 8px">
+        {{ rij('mdi:account-group', 'Verzamelen', as_local(as_datetime(a.meet_time)).strftime('%H:%M') if a.meet_time else '–', ' <span style=&quot;font-size:12px;color:var(--secondary-text-color)&quot;>(' ~ ('opgegeven door de club' if a.meet_time_source == 'club' else 'eigen instelling') ~ ')</span>') }}
+        {% if a.departure_time and a.home_away == 'away' %}{{ rij('mdi:bus', 'Vertrek bij de club', a.departure_time) }}{% endif %}
+        {{ rij('mdi:door', 'Kleedkamer', a.dressing_room or 'nog niet bekend') }}
+        {{ rij('mdi:soccer-field', 'Veld', a.pitch or 'nog niet bekend') }}
+        {% if a.address %}{{ rij('mdi:map-marker', a.venue, '<a href=&quot;https://www.google.com/maps/dir/?api=1&destination=' ~ (a.venue ~ ', ' ~ a.address) | urlencode ~ '&quot; target=&quot;_blank&quot; style=&quot;color:var(--primary-color)&quot;>' ~ a.address ~ ' ↗</a>') }}{% else %}{{ rij('mdi:map-marker', 'Sportpark', a.venue or '–') }}{% endif %}
+        {{ rij('mdi:timer-outline', 'Einde (verwacht)', as_local(as_datetime(a.end)).strftime('%H:%M') if a.end else '–') }}
+        {% if a.match_number %}{{ rij('mdi:pound', 'Wedstrijdnummer', a.match_number) }}{% endif %}
+        </div>{% endif %}
+      title: Wedstrijddetails
+  - type: grid
+    cards:
+    - type: heading
+      heading: Tegenstander & weer
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set kleur = {'win': 'var(--success-color, #2e7d32)', 'draw': 'var(--warning-color, #f9a825)', 'loss': 'var(--error-color, #c62828)'} %}{% set letter = {'win': 'W', 'draw': 'G', 'loss': 'V'} %}{% macro badge(r) %}<span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;background:{{ kleur[r] | default('var(--disabled-color)') }};color:#fff;font-size:12px;font-weight:600;text-align:center;margin:0 2px">{{ letter[r] | default('?') }}</span>{% endmacro %}
+        {% set m = states['sensor.vv_voorbeeld_jo13_2_next_match'] %}
+        {% if m is not none and m.state not in ['unknown', 'unavailable'] %}{% set a = m.attributes %}
+        <div style="padding:16px;display:flex;gap:16px;align-items:center">
+        <img src="{{ a.opponent_logo }}" style="width:72px;height:72px;object-fit:contain">
+        <div style="flex:1">
+        <div style="font-size:18px;font-weight:600">{{ a.opponent }}</div>
+        <div style="color:var(--secondary-text-color);margin:2px 0 8px">{% if a.opponent_position %}{{ a.opponent_position }}e in de poule · {{ a.opponent_points }} punten{% else %}nog geen stand{% endif %}</div>
+        <div>{% for r in a.opponent_form or [] %}{{ badge(r) }}{% else %}<span style="color:var(--secondary-text-color)">nog geen uitslagen</span>{% endfor %}</div>
+        </div></div>
+        <div style="padding:0 16px 16px;font-size:14px">
+        {% if a.previous_meeting %}<div>Vorige ontmoeting: <b>{{ a.previous_meeting }}</b> {{ badge(a.previous_meeting_result) }}</div>{% else %}<div style="color:var(--secondary-text-color)">Nog niet eerder tegen gespeeld dit seizoen.</div>{% endif %}
+        {% if a.opponent_colours %}<div style="margin-top:6px;color:var(--secondary-text-color)">Tenue (thuis): {{ a.opponent_colours }}</div>{% endif %}
+        </div>{% endif %}
+      title: Tegenstander
+    - type: weather-forecast
+      entity: weather.home
+      forecast_type: daily
+      show_current: true
+      show_forecast: true
+  - type: grid
+    cards:
+    - type: heading
+      heading: Programma
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set m = states['sensor.vv_voorbeeld_jo13_2_next_match'] %}
+        {% set later = state_attr('sensor.vv_voorbeeld_jo13_2_next_match', 'upcoming') or [] %}
+        <div style="padding:0 16px 12px">
+        {% for w in later %}{% set ko = as_local(as_datetime(w.start)) %}
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--divider-color)">
+        <div style="width:64px;text-align:center"><div style="font-size:12px;color:var(--secondary-text-color)">{{ dagen[ko.weekday()][:2] }} {{ ko.day }} {{ maanden[ko.month - 1] }}</div><div style="font-weight:600">{{ ko.strftime('%H:%M') }}</div></div>
+        <div style="flex:1"><div style="font-weight:500">{{ w.opponent }}</div><div style="font-size:12px;color:var(--secondary-text-color)">{{ w.venue or '' }}</div></div>
+        <span style="font-size:12px;padding:2px 8px;border-radius:10px;background:{{ 'var(--primary-color)' if w.home_away == 'home' else 'var(--secondary-background-color)' }};color:{{ '#fff' if w.home_away == 'home' else 'var(--primary-text-color)' }}">{{ 'thuis' if w.home_away == 'home' else 'uit' }}</span>
+        </div>{% else %}<div style="color:var(--secondary-text-color);padding:8px 0">Geen verdere wedstrijden gepland.</div>{% endfor %}
+        </div>
+      title: Daarna
+    - type: calendar
+      entities:
+      - calendar.vv_voorbeeld_jo13_2
+      initial_view: listWeek
+- title: Stand
+  path: stand
+  icon: mdi:podium
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Stand
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set kleur = {'win': 'var(--success-color, #2e7d32)', 'draw': 'var(--warning-color, #f9a825)', 'loss': 'var(--error-color, #c62828)'} %}{% set letter = {'win': 'W', 'draw': 'G', 'loss': 'V'} %}{% macro badge(r) %}<span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;background:{{ kleur[r] | default('var(--disabled-color)') }};color:#fff;font-size:12px;font-weight:600;text-align:center;margin:0 2px">{{ letter[r] | default('?') }}</span>{% endmacro %}
+        {% set s = states['sensor.vv_voorbeeld_jo13_2_standing'] %}{% set a = s.attributes %}
+        {% macro getal(waarde, label) %}<div style="flex:1;text-align:center;padding:8px 0"><div style="font-size:28px;font-weight:700">{{ waarde }}</div><div style="font-size:12px;color:var(--secondary-text-color)">{{ label }}</div></div>{% endmacro %}
+        <div style="padding:12px 8px 4px;display:flex">
+        {{ getal(s.state ~ 'e', 'positie') }}{{ getal(a.points, 'punten') }}{{ getal(('+' if a.goal_difference > 0 else '') ~ a.goal_difference, 'doelsaldo') }}{{ getal(a.points_to_leader if a.points_to_leader else '–', 'achter koploper') }}
+        </div>
+        <div style="text-align:center;padding:0 0 14px">{% for r in a.form or [] %}{{ badge(r) }}{% endfor %}<div style="font-size:12px;color:var(--secondary-text-color);margin-top:4px">vorm, laatste 5 · {{ a.competition }}</div></div>
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set a = states['sensor.vv_voorbeeld_jo13_2_standing'].attributes %}{% set eigen = state_attr('sensor.vv_voorbeeld_jo13_2_next_match', 'home_team') if state_attr('sensor.vv_voorbeeld_jo13_2_next_match', 'home_away') == 'home' else state_attr('sensor.vv_voorbeeld_jo13_2_next_match', 'away_team') %}
+        {% set eigen = eigen or state_attr('sensor.vv_voorbeeld_jo13_2_last_result', 'home_team' if state_attr('sensor.vv_voorbeeld_jo13_2_last_result', 'home_away') == 'home' else 'away_team') %}
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr style="font-size:12px;color:var(--secondary-text-color);text-align:right"><th style="text-align:left;padding:6px 8px">#</th><th style="text-align:left">Team</th><th>G</th><th>DS</th><th style="padding-right:12px">P</th></tr>
+        {% for r in a.table or [] %}{% set mij = r.team == eigen %}
+        <tr style="text-align:right;border-top:1px solid var(--divider-color);{{ 'background:rgba(var(--rgb-primary-color),0.15);font-weight:600' if mij else '' }}">
+        <td style="text-align:left;padding:8px">{{ r.position }}</td><td style="text-align:left">{{ r.team }}</td><td>{{ r.played }}</td><td>{{ ('+' if r.goal_difference > 0 else '') ~ r.goal_difference }}</td><td style="padding-right:12px">{{ r.points }}</td></tr>
+        {% endfor %}</table>
+      title: Stand
+  - type: grid
+    cards:
+    - type: heading
+      heading: Poule
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set rows = state_attr('sensor.vv_voorbeeld_jo13_2_standing', 'last_round') or [] %}
+        <div style="padding:0 16px 12px">{% if rows %}{% set d = as_datetime(rows[0].date) %}<div style="font-size:12px;color:var(--secondary-text-color);margin-bottom:4px">{{ dagen[d.weekday()] | capitalize }} {{ d.day }} {{ maanden[d.month - 1] }}</div>{% endif %}
+        {% for r in rows %}<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--divider-color)"><span>{{ r.home_team }} – {{ r.away_team }}</span><b style="white-space:nowrap;padding-left:8px">{{ r.score }}</b></div>{% else %}<div style="color:var(--secondary-text-color)">Nog geen uitslagen in deze poule.</div>{% endfor %}
+        </div>
+      title: Laatste speelronde
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set p = state_attr('sensor.vv_voorbeeld_jo13_2_standing', 'periods') or [] %}
+        <div style="padding:0 16px 12px">{% for x in p %}<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--divider-color)"><span>Periode {{ x.period }} · koploper {{ x.leader }}</span><b>{{ x.position }}e · {{ x.points }} pt</b></div>{% else %}<div style="color:var(--secondary-text-color)">Deze poule heeft geen periodestanden (alleen bij senioren).</div>{% endfor %}</div>
+      title: Periodes
+- title: Seizoen
+  path: seizoen
+  icon: mdi:chart-line
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Seizoen
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set kleur = {'win': 'var(--success-color, #2e7d32)', 'draw': 'var(--warning-color, #f9a825)', 'loss': 'var(--error-color, #c62828)'} %}{% set letter = {'win': 'W', 'draw': 'G', 'loss': 'V'} %}{% macro badge(r) %}<span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;background:{{ kleur[r] | default('var(--disabled-color)') }};color:#fff;font-size:12px;font-weight:600;text-align:center;margin:0 2px">{{ letter[r] | default('?') }}</span>{% endmacro %}
+        {% set a = states['sensor.vv_voorbeeld_jo13_2_standing'].attributes %}
+        {% macro getal(waarde, label, kleur='var(--primary-text-color)') %}<div style="flex:1;text-align:center;padding:6px 0"><div style="font-size:26px;font-weight:700;color:{{ kleur }}">{{ waarde }}</div><div style="font-size:12px;color:var(--secondary-text-color)">{{ label }}</div></div>{% endmacro %}
+        <div style="padding:12px 8px 0;display:flex">{{ getal(a.season_played, 'gespeeld') }}{{ getal(a.season_won, 'gewonnen', 'var(--success-color, #2e7d32)') }}{{ getal(a.season_drawn, 'gelijk', 'var(--warning-color, #f9a825)') }}{{ getal(a.season_lost, 'verloren', 'var(--error-color, #c62828)') }}</div>
+        <div style="padding:0 8px 12px;display:flex">{{ getal(a.season_goals_for, 'voor') }}{{ getal(a.season_goals_against, 'tegen') }}{{ getal((a.season_goals_for / a.season_played) | round(1) if a.season_played else '–', 'per wedstrijd') }}</div>
+        <div style="text-align:center;font-size:12px;color:var(--secondary-text-color);padding-bottom:12px">hele seizoen, alle fases samen</div>
+      title: Seizoen tot nu toe
+    - type: statistics-graph
+      title: Punten en doelsaldo (deze poule)
+      entities:
+      - sensor.vv_voorbeeld_jo13_2_points
+      - sensor.vv_voorbeeld_jo13_2_goal_difference
+      stat_types:
+      - mean
+      chart_type: line
+      period: day
+      days_to_show: 120
+      hide_legend: false
+    - type: statistics-graph
+      title: Positie
+      entities:
+      - sensor.vv_voorbeeld_jo13_2_standing
+      stat_types:
+      - mean
+      chart_type: line
+      period: day
+      days_to_show: 120
+  - type: grid
+    cards:
+    - type: heading
+      heading: Uitslagen
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set kleur = {'win': 'var(--success-color, #2e7d32)', 'draw': 'var(--warning-color, #f9a825)', 'loss': 'var(--error-color, #c62828)'} %}{% set letter = {'win': 'W', 'draw': 'G', 'loss': 'V'} %}{% macro badge(r) %}<span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;background:{{ kleur[r] | default('var(--disabled-color)') }};color:#fff;font-size:12px;font-weight:600;text-align:center;margin:0 2px">{{ letter[r] | default('?') }}</span>{% endmacro %}{% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set rows = state_attr('sensor.vv_voorbeeld_jo13_2_last_result', 'season_results') or [] %}
+        <div style="padding:0 16px 12px">{% set ns = namespace(fase='') %}
+        {% for r in rows | reverse %}{% if r.competition != ns.fase %}{% set ns.fase = r.competition %}<div style="font-size:12px;color:var(--secondary-text-color);padding:12px 0 2px;text-transform:uppercase;letter-spacing:.05em">{{ r.competition }}</div>{% endif %}
+        {% set d = as_datetime(r.date) %}
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--divider-color)">
+        <span style="width:52px;font-size:12px;color:var(--secondary-text-color)">{{ d.day }} {{ maanden[d.month - 1] }}</span>{{ badge(r.result) }}
+        <span style="flex:1">{{ r.opponent }} <span style="font-size:12px;color:var(--secondary-text-color)">({{ 'thuis' if r.home_away == 'home' else 'uit' }})</span></span><b>{{ r.score }}</b></div>
+        {% else %}<div style="color:var(--secondary-text-color)">Nog geen uitslagen.</div>{% endfor %}</div>
+      title: Alle uitslagen
+- title: Club
+  path: club
+  icon: mdi:shield-home
+  type: sections
+  max_columns: 2
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Club
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set t = states['sensor.vv_voorbeeld_matches_today'] %}
+        {% if t is none or t.state in ['unknown', 'unavailable'] %}
+        <div style="padding:16px;color:var(--secondary-text-color)">Volg je club om dit te vullen: <b>Instellingen → Apparaten &amp; diensten → KNVB Voetbal → Club toevoegen</b>. Dan zie je hier alle wedstrijden van vandaag, de thuiswedstrijden (handig voor de kantine) en de laatste uitslagen.</div>
+        {% else %}
+        {% set thuis = states['sensor.vv_voorbeeld_home_matches_today'] %}{% set u = states['sensor.vv_voorbeeld_latest_results'] %}
+        <div style="padding:12px 16px;display:flex;text-align:center">
+        <div style="flex:1"><div style="font-size:28px;font-weight:700">{{ t.state }}</div><div style="font-size:12px;color:var(--secondary-text-color)">wedstrijden vandaag</div></div>
+        <div style="flex:1"><div style="font-size:28px;font-weight:700">{{ thuis.state }}</div><div style="font-size:12px;color:var(--secondary-text-color)">thuis</div></div>
+        <div style="flex:1"><div style="font-size:28px;font-weight:700">{{ as_local(as_datetime(thuis.attributes.first_kickoff)).strftime('%H:%M') if thuis.attributes.first_kickoff else '–' }}–{{ as_local(as_datetime(thuis.attributes.last_kickoff)).strftime('%H:%M') if thuis.attributes.last_kickoff else '' }}</div><div style="font-size:12px;color:var(--secondary-text-color)">eerste – laatste aftrap thuis</div></div>
+        </div>
+        <div style="padding:0 16px 12px">{% for w in t.attributes.matches %}{% set ko = as_local(as_datetime(w.start)) %}
+        <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--divider-color);align-items:center">
+        <b style="width:44px">{{ ko.strftime('%H:%M') }}</b><span style="flex:1">{% if w.home_away == 'home' %}<b>{{ w.team }}</b> – {{ w.opponent }}{% else %}{{ w.opponent }} – <b>{{ w.team }}</b>{% endif %}</span>
+        {% if w.score %}<b>{{ w.score }}</b>{% else %}<span style="font-size:12px;color:var(--secondary-text-color)">{{ 'thuis' if w.home_away == 'home' else 'uit' }}</span>{% endif %}</div>
+        {% endfor %}</div>
+        {% endif %}
+      title: Vandaag bij de club
+  - type: grid
+    cards:
+    - type: heading
+      heading: Uitslagen
+    - type: custom:html-template-card
+      ignore_line_breaks: true
+      content: |
+        {% set dagen = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'] %}{% set maanden = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'] %}
+        {% set u = states['sensor.vv_voorbeeld_latest_results'] %}
+        {% if u is not none and u.state not in ['unknown', 'unavailable'] %}
+        {% set d = as_datetime(u.state) %}<div style="padding:4px 16px 4px;color:var(--secondary-text-color);font-size:13px">{{ dagen[d.weekday()] | capitalize }} {{ d.day }} {{ maanden[d.month - 1] }} · {{ u.attributes.won }} gewonnen, {{ u.attributes.drawn }} gelijk, {{ u.attributes.lost }} verloren</div>
+        <div style="padding:0 16px 12px">{% for r in u.attributes.results %}<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--divider-color)"><span>{% if r.home_away == 'home' %}<b>{{ r.team }}</b> – {{ r.opponent }}{% else %}{{ r.opponent }} – <b>{{ r.team }}</b>{% endif %}</span><b style="color:{{ 'var(--success-color, #2e7d32)' if r.result == 'win' else 'var(--error-color, #c62828)' if r.result == 'loss' else 'var(--primary-text-color)' }}">{{ r.score }}</b></div>{% endfor %}</div>
+        {% else %}<div style="padding:16px;color:var(--secondary-text-color)">Nog geen club gevolgd.</div>{% endif %}
+      title: Laatste uitslagen club

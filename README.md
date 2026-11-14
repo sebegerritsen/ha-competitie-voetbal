@@ -6,6 +6,23 @@ for Dutch amateur football: the fixtures, results and standings of any team of a
 > **Status: early (0.1).** It works, but it is new: expect rough edges, and please report them in the
 > [issues](../../issues).
 
+## Screenshots
+
+An example dashboard built on the integration's entities ([examples/dashboard.yaml](examples/dashboard.yaml)),
+shown with a made-up club and season:
+
+| Match day | Standing (phone) |
+|---|---|
+| ![Match day: kick-off, meet time from the club, dressing room, pitch, route to the venue, the opponent's form, the weather and what comes next](docs/images/dashboard-match-day.png) | ![Standing with your team highlighted, form and the latest round](docs/images/dashboard-standing-phone.png) |
+
+| Season | Club |
+|---|---|
+| ![Season record over all phases, points and goal difference over time, and every result](docs/images/dashboard-season.png) | ![Every match of the club today, with the results as they come in](docs/images/dashboard-club.png) |
+
+The entities of a team, as Home Assistant shows them:
+
+![A team's device page: calendar, next match, next opponent, meet time, home or away, weather, last result, standing, points, goal difference, match today and match update](docs/images/device-team.png)
+
 ## What it does
 
 Log in with your own (free) [voetbal.nl](https://www.voetbal.nl) account, then pick teams: the ones you
@@ -59,6 +76,14 @@ play there, or for whoever runs the canteen on Saturdays. The club gets a device
 
 If the voetbal.nl app changes its data service so that this version no longer fits, Home Assistant
 shows a repair asking to update the integration.
+
+### Example dashboard
+
+[examples/dashboard.yaml](examples/dashboard.yaml) is the dashboard from the screenshots: match day,
+standing, season and club, in Dutch. It needs the *HTML Jinja2 Template card* from HACS. Replace the
+example entity ids with yours (instructions at the top of the file) and paste it into a new dashboard's
+raw configuration editor. The graphs start at the beginning of the current pool: the integration fills
+Home Assistant's statistics with the season so far.
 
 ### Team settings
 
