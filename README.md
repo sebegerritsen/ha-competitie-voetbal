@@ -103,9 +103,15 @@ Ready-made automations that send a notification to your phone (Home Assistant ap
 
 ## Installation
 
-1. In HACS, add this repository as a custom repository (category *Integration*), install **Competitie
-   Voetbal** and restart Home Assistant. Or copy `custom_components/competitie_voetbal` into your
-   configuration's `custom_components` folder and restart.
+Requires Home Assistant 2025.12 or newer.
+
+[![Open your Home Assistant instance and open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sebegerritsen&repository=ha-competitie-voetbal&category=integration)
+
+1. **HACS** (since Home Assistant 2026.11 part of the built-in *Marketplace*): add
+   `https://github.com/sebegerritsen/ha-competitie-voetbal` as a custom repository of type *Integration*,
+   install **Competitie Voetbal** and restart Home Assistant. **Manually:** copy
+   `custom_components/competitie_voetbal` into the `custom_components` folder of your configuration and
+   restart.
 2. **Settings → Devices & services → Add integration → Competitie Voetbal**, and log in with your voetbal.nl
    account. If the account follows teams in the app, you can pick those right away.
 3. Add more teams with **Add team** on the integration's page: from the teams you follow, or by
