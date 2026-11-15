@@ -4,7 +4,7 @@ get_matches:
       required: true
       selector:
         device:
-          integration: competitie_voetbal
+          integration: voetbalcompetitie
     upcoming_only:
       default: false
       selector:
@@ -15,4 +15,4 @@ get_standing:
       required: true
       selector:
         device:
-          integration: competitie_voetbal
+          integration: voetbalcompetitie

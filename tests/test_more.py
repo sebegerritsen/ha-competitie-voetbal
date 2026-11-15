@@ -15,15 +15,15 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.competitie_voetbal.const import (
+from custom_components.voetbalcompetitie.const import (
     CONF_CLUB_ID,
     CONF_CLUB_NAME,
     CONF_REFRESH_TOKEN,
     DOMAIN,
     SUBENTRY_CLUB,
 )
-from custom_components.competitie_voetbal.coordinator import estimated_duration
-from custom_components.competitie_voetbal.models import TeamRef
+from custom_components.voetbalcompetitie.coordinator import estimated_duration
+from custom_components.voetbalcompetitie.models import TeamRef
 
 from .conftest import CLUB_ID, EMAIL, NOW, TEAM_ID, data_url, load_fixture
 
@@ -35,6 +35,16 @@ STANDING = "sensor.vv_voorbeeld_jo13_2_standing"
 POINTS = "sensor.vv_voorbeeld_jo13_2_points"
 
 pytestmark = pytest.mark.usefixtures("dutch_time")
+
+
+def _device(devices: dr.DeviceRegistry, identifier: str) -> dr.DeviceEntry:
+    """Look a device up on old (2025.12) and new (2026.x) device registries alike."""
+    if hasattr(devices, "async_get_devices"):
+        (device,) = devices.async_get_devices(identifiers={(DOMAIN, identifier)})
+    else:
+        device = devices.async_get_device(identifiers={(DOMAIN, identifier)})
+    assert device is not None
+    return device
 
 
 async def _setup(hass: HomeAssistant, entry: MockConfigEntry) -> None:
@@ -212,8 +222,7 @@ async def test_actions(
     )
     await _setup(hass, both)
     devices = dr.async_get(hass)
-    (team,) = devices.async_get_devices(identifiers={(DOMAIN, TEAM_ID)})
-    (club,) = devices.async_get_devices(identifiers={(DOMAIN, f"club_{CLUB_ID}")})
+    team, club = (_device(devices, identifier) for identifier in (TEAM_ID, f"club_{CLUB_ID}"))
 
     response = await hass.services.async_call(
         DOMAIN, "get_matches", {"device_id": team.id}, blocking=True, return_response=True
@@ -296,7 +305,7 @@ async def test_season_history_into_statistics(
     freezer.move_to(NOW)
     hass.config.components.add("recorder")
     with patch(
-        "custom_components.competitie_voetbal.sensor.async_import_statistics"
+        "custom_components.voetbalcompetitie.sensor.async_import_statistics"
     ) as import_statistics:
         await _setup(hass, config_entry)
     imported = {
@@ -328,7 +337,7 @@ def test_history_rows_step_between_matches() -> None:
 
     from homeassistant.util import dt as dt_util  # noqa: PLC0415
 
-    from custom_components.competitie_voetbal.sensor import history_rows  # noqa: PLC0415
+    from custom_components.voetbalcompetitie.sensor import history_rows  # noqa: PLC0415
 
     utc = dt_util.UTC
     history = [

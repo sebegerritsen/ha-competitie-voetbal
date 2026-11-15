@@ -1,0 +1,42 @@
+name: Something doesn't work
+description: A bug, a wrong value, or an error in Home Assistant's log.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please don't post names of players, your email address or tokens:
+        the diagnostics file below already hides your email address and session token.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.11.0"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Voetbalcompetitie version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: >-
+        Settings → Devices & services → Voetbalcompetitie → ⋮ → Download diagnostics, and drop the file
+        here. It contains your teams' matches, which are public data anyway.
+  - type: textarea
+    id: log
+    attributes:
+      label: Log lines
+      description: Lines from Settings → System → Logs that mention voetbalcompetitie.
+      render: text

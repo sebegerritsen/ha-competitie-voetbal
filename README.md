@@ -1,4 +1,4 @@
-# Competitie Voetbal for Home Assistant
+# Voetbalcompetitie for Home Assistant
 
 A [Home Assistant](https://www.home-assistant.io/) integration, installable through [HACS](https://hacs.xyz/),
 for Dutch amateur football: the fixtures, results and standings of any team of any KNVB club.
@@ -69,9 +69,9 @@ play there, or for whoever runs the canteen on Saturdays. The club gets a device
 
 ### Actions
 
-- `competitie_voetbal.get_matches`: the matches of a team (with venue, meet time and score) or a club, as a
+- `voetbalcompetitie.get_matches`: the matches of a team (with venue, meet time and score) or a club, as a
   response, optionally upcoming ones only. For scripts, dashboards and voice assistants.
-- `competitie_voetbal.get_standing`: the full standing of a team's pool, with each team's form, and the
+- `voetbalcompetitie.get_standing`: the full standing of a team's pool, with each team's form, and the
   period standings.
 
 If the voetbal.nl app changes its data service so that this version no longer fits, Home Assistant
@@ -87,7 +87,7 @@ Home Assistant's statistics with the season so far.
 
 ### Team settings
 
-*Settings → Devices & services → Competitie Voetbal → (team) → ⋮ → Reconfigure*: when the team meets for home
+*Settings → Devices & services → Voetbalcompetitie → (team) → ⋮ → Reconfigure*: when the team meets for home
 and away matches when the club has not entered a departure time (default 30 minutes before kick-off),
 and optionally a weather entity for the *Weather at next match* sensor.
 
@@ -97,23 +97,25 @@ Ready-made automations that send a notification to your phone (Home Assistant ap
 
 | Blueprint | What it does | |
 |---|---|---|
-| Notify on match changes | a match is called off, back on, moved, or has a result | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmatch_update_notify.yaml) |
-| Reminder before meet time | a set time before the meet time, with venue, address, dressing room and weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmeet_time_reminder.yaml) |
-| Match day summary | at a set time on match days: opponent, kick-off, meet time, venue, dressing room, weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-competitie-voetbal%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcompetitie_voetbal%2Fmatch_day_summary.yaml) |
+| Notify on match changes | a match is called off, back on, moved, or has a result | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-voetbalcompetitie%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fvoetbalcompetitie%2Fmatch_update_notify.yaml) |
+| Reminder before meet time | a set time before the meet time, with venue, address, dressing room and weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-voetbalcompetitie%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fvoetbalcompetitie%2Fmeet_time_reminder.yaml) |
+| Match day summary | at a set time on match days: opponent, kick-off, meet time, venue, dressing room, weather | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fsebegerritsen%2Fha-voetbalcompetitie%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fvoetbalcompetitie%2Fmatch_day_summary.yaml) |
 
 ## Installation
 
 Requires Home Assistant 2025.12 or newer.
 
-[![Open your Home Assistant instance and open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sebegerritsen&repository=ha-competitie-voetbal&category=integration)
+[![Open your Home Assistant instance and open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sebegerritsen&repository=ha-voetbalcompetitie&category=integration)
 
 1. **HACS** (since Home Assistant 2026.11 part of the built-in *Marketplace*): add
-   `https://github.com/sebegerritsen/ha-competitie-voetbal` as a custom repository of type *Integration*,
-   install **Competitie Voetbal** and restart Home Assistant. **Manually:** copy
-   `custom_components/competitie_voetbal` into the `custom_components` folder of your configuration and
+   `https://github.com/sebegerritsen/ha-voetbalcompetitie` as a custom repository of type *Integration*,
+   install **Voetbalcompetitie** and restart Home Assistant. **Manually:** copy
+   `custom_components/voetbalcompetitie` into the `custom_components` folder of your configuration and
    restart.
-2. **Settings → Devices & services → Add integration → Competitie Voetbal**, and log in with your voetbal.nl
-   account. If the account follows teams in the app, you can pick those right away.
+2. **Settings → Devices & services → Add integration → Voetbalcompetitie**, and log in with your voetbal.nl
+   account. If the account follows teams in the app, you can pick those right away. A brand-new account
+   must first be opened once in the voetbal.nl app, which asks a few details (name, date of birth) before
+   it shows any data; until then the integration can't fetch anything either.
 3. Add more teams with **Add team** on the integration's page: from the teams you follow, or by
    searching for a club and picking one of its teams.
 

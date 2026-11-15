@@ -1,4 +1,4 @@
-"""Constants for the Competitie Voetbal integration."""
+"""Constants for the Voetbalcompetitie integration."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from datetime import timedelta
 import logging
 from typing import Final
 
-DOMAIN: Final = "competitie_voetbal"
+DOMAIN: Final = "voetbalcompetitie"
 LOGGER = logging.getLogger(__package__)
 
 # Config entry (one per voetbal.nl account)

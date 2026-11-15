@@ -1,4 +1,4 @@
-"""Fixtures for the Competitie Voetbal tests. All clubs, teams and accounts in them are made up."""
+"""Fixtures for the Voetbalcompetitie tests. All clubs, teams and accounts in them are made up."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.competitie_voetbal.api import DATA_URL, TOKEN_URL
-from custom_components.competitie_voetbal.const import (
+from custom_components.voetbalcompetitie.api import DATA_URL, TOKEN_URL
+from custom_components.voetbalcompetitie.const import (
     CONF_CLUB_ID,
     CONF_CLUB_NAME,
     CONF_REFRESH_TOKEN,

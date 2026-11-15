@@ -1,0 +1,17 @@
+{
+  "domain": "voetbalcompetitie",
+  "name": "Voetbalcompetitie",
+  "after_dependencies": [
+    "recorder"
+  ],
+  "codeowners": [
+    "@sebegerritsen"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/sebegerritsen/ha-voetbalcompetitie",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/sebegerritsen/ha-voetbalcompetitie/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

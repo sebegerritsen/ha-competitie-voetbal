@@ -9,7 +9,7 @@
     python3 tools/probe.py 'team/TeamProgram?v=3&PublicTeamId=<team id>'
 
 Prints the JSON response. The session (access + refresh token) is kept in
-~/.cache/competitie-voetbal-probe.json (mode 0600); your password is only used when there is no
+~/.cache/voetbalcompetitie-probe.json (mode 0600); your password is only used when there is no
 valid refresh token. Never use this to fetch rosters or other personal data.
 """
 
@@ -29,7 +29,7 @@ BASE_URL = "https://app-vnl-production.sportlink.com"
 DATA_PATH = "/entity/common/memberportal/app/"
 # The server answers 500 without an app-style User-Agent (see docs/api.md).
 USER_AGENT = "sportlink-app-voetbalnl/6.64.0-2026025447 android generic/android/33  (6.64.0)"
-STATE = os.path.expanduser("~/.cache/competitie-voetbal-probe.json")
+STATE = os.path.expanduser("~/.cache/voetbalcompetitie-probe.json")
 
 
 def _env(name: str) -> str:

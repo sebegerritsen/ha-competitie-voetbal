@@ -1,22 +1,23 @@
-# Competitie Voetbal: notes for working on this repo
+# Voetbalcompetitie: notes for working on this repo
 
-Public open-source project (GitHub: sebegerritsen/ha-competitie-voetbal), meant for HACS, a sibling of
+Public open-source project (GitHub: sebegerritsen/ha-voetbalcompetitie), meant for HACS, a sibling of
 ha-knhb-hockey (same structure and conventions; look there for patterns). Everything in this repo is
 public: **no personal data** — no account details, no real people, no rosters, no tokens, no details of
 the owner's home or club. Use made-up teams/clubs or anonymised data in tests and examples.
 
 ## What it is
 
-A Home Assistant custom integration (`custom_components/competitie_voetbal`, domain `competitie_voetbal`) for Dutch
+A Home Assistant custom integration (`custom_components/voetbalcompetitie`, domain `voetbalcompetitie`) for Dutch
 amateur football data from the API behind the official voetbal.nl app (Sportlink, KNVB). How the API
 works (OAuth password + refresh grant, required headers incl. the app User-Agent and
 `X-Navajo-Version` = `v`, endpoints, data shapes): docs/api.md. `tools/probe.py` calls it.
 
 Decided (Nov 2026):
-- **Name: "Competitie Voetbal"** (domain `competitie_voetbal`, repo ha-competitie-voetbal; was "KNVB Voetbal"
-  until 14 Nov 2026). No "KNVB" or "voetbal.nl" in the name, domain, repo or icon, and never their logo: the
-  project must not look official. Mentioning them as the data source and in the disclaimer is fine. The
-  hockey sibling is meant to follow as "Competitie Hockey".
+- **Name: "Voetbalcompetitie"** (domain `voetbalcompetitie`, repo ha-voetbalcompetitie), like its siblings
+  Hockeycompetitie and Tenniscompetitie. Was "KNVB Voetbal" and then "Competitie Voetbal" (14 Nov 2026), renamed
+  on 15 Nov 2026 before the first release. No "KNVB" or "voetbal.nl" in the name, domain, repo or icon, and
+  never their logo: the project must not look official. Mentioning them as the data source and in the
+  disclaimer is fine.
 - The user logs in with their own voetbal.nl account (spectator/parent accounts work). Store only the
   refresh token, never the password. **Refresh tokens are single use**: every refresh returns a new one
   and the old one dies at once, so the client serialises refreshes behind a lock and the new token is
@@ -34,7 +35,7 @@ Decided (Nov 2026):
   else the daily item of the match date), last result, standing (+ form, points to leader, season over all
   pools); binary sensor match today; event match update (changes.py, snapshot in a Store per team). Team
   settings live in the subentry data (Reconfigure); a changed subentry reloads the entry. Blueprints in
-  blueprints/automation/competitie_voetbal mirror hockey's. Also: statistics sensors (points, goal difference,
+  blueprints/automation/voetbalcompetitie mirror hockey's. Also: statistics sensors (points, goal difference,
   goals, played; state_class measurement), period standings and last round on the standing.
 - Second subentry type `club` ("Add club"): KnvbClubCoordinator on club/ClubProgram + ClubMatchResults
   (2 h, 30 min on match days, 15 min while results come in): calendar, matches today, home matches
@@ -52,11 +53,14 @@ Decided (Nov 2026):
 ## Development
 
 Tests and lint as in the sibling project: a Python 3.14 venv with `requirements_test.txt` + ruff, then
-`pytest` and `ruff check . && ruff format --check .` (CI runs the same, plus hassfest and HACS).
+`pytest` and `ruff check . && ruff format --check .` (CI runs the same, plus hassfest and HACS). CI also runs
+the tests on the oldest supported Home Assistant, 2025.12 (`hacs.json`), with Python 3.13 and
+pytest-homeassistant-custom-component 0.13.298 (+ `pycares<5`; locally also `lru-dict==1.4.1`, which has a
+wheel). Raise `homeassistant` in hacs.json together with that job, never just one of them.
 Fixtures in tests/fixtures are made up in the API's exact shapes.
 
 ## Testing locally
 
-Copy `custom_components/competitie_voetbal` into your Home Assistant `custom_components/` folder and restart
+Copy `custom_components/voetbalcompetitie` into your Home Assistant `custom_components/` folder and restart
 Home Assistant. Personal setup notes (paths, test account) belong in `CLAUDE.local.md`, which is
 git-ignored.

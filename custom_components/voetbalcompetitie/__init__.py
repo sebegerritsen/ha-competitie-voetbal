@@ -1,4 +1,4 @@
-"""The Competitie Voetbal integration: fixtures, results and standings of KNVB teams."""
+"""The Voetbalcompetitie integration: fixtures, results and standings of KNVB teams."""
 
 from __future__ import annotations
 

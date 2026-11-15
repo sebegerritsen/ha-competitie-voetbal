@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from custom_components.competitie_voetbal.coordinator import match_duration
-from custom_components.competitie_voetbal.models import (
+from custom_components.voetbalcompetitie.coordinator import match_duration
+from custom_components.voetbalcompetitie.models import (
     Facility,
     MatchStatus,
     PoolData,

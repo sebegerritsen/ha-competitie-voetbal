@@ -1,10 +1,10 @@
 blueprint:
-  name: Competitie Voetbal – match day summary
+  name: Voetbalcompetitie – match day summary
   description: >-
     On match days, sends a short summary at a set time: opponent, kick-off, meet time,
     venue, dressing room and the weather forecast. Uses the team's *Match today* entity.
   domain: automation
-  source_url: https://github.com/sebegerritsen/ha-competitie-voetbal/blob/main/blueprints/automation/competitie_voetbal/match_day_summary.yaml
+  source_url: https://github.com/sebegerritsen/ha-voetbalcompetitie/blob/main/blueprints/automation/voetbalcompetitie/match_day_summary.yaml
   input:
     match_today_entity:
       name: Match today
@@ -12,7 +12,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - integration: competitie_voetbal
+            - integration: voetbalcompetitie
               domain: binary_sensor
     notify_device:
       name: Phone

@@ -13,7 +13,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.competitie_voetbal.const import (
+from custom_components.voetbalcompetitie.const import (
     CONF_MEET_MINUTES_AWAY,
     CONF_MEET_MINUTES_HOME,
     CONF_WEATHER_ENTITY,
@@ -210,13 +210,14 @@ async def test_match_updates(
     freezer.move_to("2026-11-14T12:00:00+00:00")
     async_fire_time_changed(hass)
     await hass.async_block_till_done()
-    assert [(e["event_type"], e["match_id"]) for e in fired] == [
-        ("result", "M100"),
-        ("rescheduled", "M101"),
-    ]
-    assert fired[0]["score"] == "1–1"
-    assert fired[0]["result"] == "draw"
-    assert fired[1]["previous_start"] == "2026-11-21T08:30:00+01:00"
+    # Both changes of this update fire (their order differs between HA versions).
+    by_type = {e["event_type"]: e for e in fired}
+    assert len(fired) == 2
+    assert by_type["result"]["match_id"] == "M100"
+    assert by_type["result"]["score"] == "1–1"
+    assert by_type["result"]["result"] == "draw"
+    assert by_type["rescheduled"]["match_id"] == "M101"
+    assert by_type["rescheduled"]["previous_start"] == "2026-11-21T08:30:00+01:00"
 
     called_off = copy.deepcopy(later)
     called_off["ProgramItemMatch"][0]["Match"] |= {
@@ -269,7 +270,7 @@ def test_daily_forecast_matches_the_date() -> None:
     from datetime import datetime  # noqa: PLC0415
     from zoneinfo import ZoneInfo  # noqa: PLC0415
 
-    from custom_components.competitie_voetbal.coordinator import _forecast_item  # noqa: PLC0415
+    from custom_components.voetbalcompetitie.coordinator import _forecast_item  # noqa: PLC0415
 
     items = [
         {"datetime": "2026-11-14T00:00:00+01:00", "temperature": 9.0},

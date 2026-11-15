@@ -88,7 +88,7 @@ def match_event(data: TeamData, match: Match) -> CalendarEvent | None:
         summary=summary,
         description=description or None,
         location=location or None,
-        uid=f"competitie_voetbal_{match.id}",
+        uid=f"voetbalcompetitie_{match.id}",
     )
 
 
@@ -136,7 +136,7 @@ def club_event(data: ClubData, match: Match) -> CalendarEvent | None:
         summary=summary,
         description=match.pool.label if match.pool else None,
         location=match.venue,
-        uid=f"competitie_voetbal_{match.id}",
+        uid=f"voetbalcompetitie_{match.id}",
     )
 
 

@@ -11,8 +11,8 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.competitie_voetbal.api import TOKEN_URL
-from custom_components.competitie_voetbal.const import (
+from custom_components.voetbalcompetitie.api import TOKEN_URL
+from custom_components.voetbalcompetitie.const import (
     CONF_REFRESH_TOKEN,
     DOMAIN,
     SUBENTRY_TEAM,
@@ -20,7 +20,7 @@ from custom_components.competitie_voetbal.const import (
     UPDATE_INTERVAL_IDLE,
     UPDATE_INTERVAL_MATCH,
 )
-from custom_components.competitie_voetbal.diagnostics import async_get_config_entry_diagnostics
+from custom_components.voetbalcompetitie.diagnostics import async_get_config_entry_diagnostics
 
 from .conftest import NOW, TEAM_DATA, calls_to, data_url, load_fixture
 
@@ -185,7 +185,7 @@ async def test_connection_error_retries(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker, config_entry: MockConfigEntry
 ) -> None:
     """A server error means: try again later."""
-    from custom_components.competitie_voetbal.api import TOKEN_URL as URL  # noqa: PLC0415
+    from custom_components.voetbalcompetitie.api import TOKEN_URL as URL  # noqa: PLC0415
 
     aioclient_mock.post(URL, json={"access_token": "a", "refresh_token": "r"})
     aioclient_mock.get(data_url("team/TeamProgram"), status=HTTPStatus.BAD_GATEWAY)
